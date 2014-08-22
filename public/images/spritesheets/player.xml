@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <TextureAtlas imagePath="player.png" width="288" height="256">
   <!-- WalkUp -->
-  <SubTexture name="Player0000" x="0" y="0" width="23" height="35" frameX="0" frameY="-1" frameWidth="23" frameHeight="35"/>
-  <SubTexture name="Player0001" x="23" y="0" width="23" height="35" frameX="0" frameY="-1" frameWidth="23" frameHeight="35"/>
-  <SubTexture name="Player0002" x="46" y="0" width="23" height="35" frameX="0" frameY="-1" frameWidth="23" frameHeight="35"/>
+  <SubTexture name="Player0000" x="23" y="0" width="23" height="35" frameX="0" frameY="-1" frameWidth="23" frameHeight="35"/>
+  <SubTexture name="Player0001" x="0" y="0" width="23" height="35" frameX="0" frameY="-1" frameWidth="23" frameHeight="35"/>
+  <SubTexture name="Player0002" x="23" y="0" width="23" height="35" frameX="0" frameY="-1" frameWidth="23" frameHeight="35"/>
+  <SubTexture name="Player0003" x="46" y="0" width="23" height="35" frameX="0" frameY="-1" frameWidth="23" frameHeight="35"/>
 </TextureAtlas>

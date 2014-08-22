@@ -17,7 +17,7 @@ SimpleRPG.Preloader.prototype.preload = function () {
   this.titleText.anchor.setTo(0.5, 0.5);
 
   // Start Loading
-  this.load.atlasXML('bunny', 'images/spritesheets/player.png', 'images/spritesheets/player.xml');
+  this.load.atlasXML('player', 'images/spritesheets/player.png', 'images/spritesheets/player.xml');
 
   this.load.bitmapFont('font', 'fonts/font.png', 'fonts/font.fnt');
 };
