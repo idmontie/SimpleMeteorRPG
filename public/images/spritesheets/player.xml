@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TextureAtlas imagePath="player.png" width="" height="">
+  <!-- WalkUp -->
+  <SubTexture name="Player0000" x="0" y="0" width="288" height="256" frameX="0" frameY="-1" frameWidth="288" frameHeight="256"/>
+  <SubTexture name="Player0001" x="288" y="0" width="288" height="256" frameX="0" frameY="-1" frameWidth="288" frameHeight="256"/>
+  <SubTexture name="Player0002" x="576" y="0" width="288" height="256" frameX="0" frameY="-1" frameWidth="288" frameHeight="256"/>
+</TextureAtlas>
