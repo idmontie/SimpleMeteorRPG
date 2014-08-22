@@ -15,6 +15,11 @@ SimpleRPG.Preloader.prototype.preload = function () {
 
   this.titleText = this.add.image(this.world.centerX, this.world.centerY - 220, 'titleImage');
   this.titleText.anchor.setTo(0.5, 0.5);
+
+  // Start Loading
+  this.load.atlasXML('bunny', 'images/spritesheets/player.png', 'images/spritesheets/player.xml');
+
+  this.load.bitmapFont('font', 'fonts/font.png', 'fonts/font.fnt');
 };
 
 SimpleRPG.Preloader.prototype.create = function () {
@@ -22,7 +27,7 @@ SimpleRPG.Preloader.prototype.create = function () {
 };
 
 SimpleRPG.Preloader.prototype.update = function () {
-  if (this.cache.isSoundDecoded('game_audio') && !this.ready) {
+  if (/*this.cache.isSoundDecoded('game_audio') &&*/ !this.ready) {
     this.ready = true;
     this.state.start('StartMenu');
   }
