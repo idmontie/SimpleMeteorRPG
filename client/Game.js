@@ -88,7 +88,6 @@ SimpleRPG.Game.prototype.buildPlayers = function () {
     150,
     'player',
     'Player0000');
-  this.player.enableBody = true;
   this.player.animations.add('WalkUp', this.game.math.numberArray(0, 3), 4, true);
   this.player.animations.add('WalkRight', this.game.math.numberArray(4, 7), 4, true);
   this.player.animations.add('WalkDown', this.game.math.numberArray(8, 11), 4, true);
@@ -100,7 +99,7 @@ SimpleRPG.Game.prototype.buildPlayers = function () {
 
   this.player.anchor.set(0.5);
   this.checkWorldBounds = true;
-  this.game.physics.ninja.enableAABB(this.player);
+  this.game.physics.ninja.enableCircle(this.player, 8);
 
   this.camera.follow(this.player);
 
