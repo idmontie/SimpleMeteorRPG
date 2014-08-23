@@ -1,8 +1,44 @@
 <?xml version="1.0" encoding="utf-8"?>
 <TextureAtlas imagePath="player.png" width="288" height="256">
   <!-- WalkUp -->
-  <SubTexture name="Player0000" x="23" y="0" width="23" height="35" frameX="0" frameY="-1" frameWidth="23" frameHeight="35"/>
-  <SubTexture name="Player0001" x="0" y="0" width="23" height="35" frameX="0" frameY="-1" frameWidth="23" frameHeight="35"/>
-  <SubTexture name="Player0002" x="23" y="0" width="23" height="35" frameX="0" frameY="-1" frameWidth="23" frameHeight="35"/>
-  <SubTexture name="Player0003" x="46" y="0" width="23" height="35" frameX="0" frameY="-1" frameWidth="23" frameHeight="35"/>
+  <SubTexture name="Player0000" x="24" y="0" width="23" height="32" frameX="0" frameY="-1" frameWidth="23" frameHeight="32"/>
+  <SubTexture name="Player0001" x="0" y="0" width="23" height="32" frameX="0" frameY="-1" frameWidth="23" frameHeight="32"/>
+  <SubTexture name="Player0002" x="24" y="0" width="23" height="32" frameX="0" frameY="-1" frameWidth="23" frameHeight="32"/>
+  <SubTexture name="Player0003" x="48" y="0" width="23" height="32" frameX="0" frameY="-1" frameWidth="23" frameHeight="32"/>
+  <!-- WalkRight -->
+  <SubTexture name="Player0004" x="24" y="32" width="23" height="32" frameX="0" frameY="-1" frameWidth="23" frameHeight="32"/>
+  <SubTexture name="Player0005" x="0" y="32" width="23" height="32" frameX="0" frameY="-1" frameWidth="23" frameHeight="32"/>
+  <SubTexture name="Player0006" x="24" y="32" width="23" height="32" frameX="0" frameY="-1" frameWidth="23" frameHeight="32"/>
+  <SubTexture name="Player0007" x="48" y="32" width="23" height="32" frameX="0" frameY="-1" frameWidth="23" frameHeight="32"/>
+  <!-- WalkDown -->
+  <SubTexture name="Player0008" x="24" y="64" width="23" height="32" frameX="0" frameY="-1" frameWidth="23" frameHeight="32"/>
+  <SubTexture name="Player0009" x="0" y="64" width="23" height="32" frameX="0" frameY="-1" frameWidth="23" frameHeight="32"/>
+  <SubTexture name="Player0010" x="24" y="64" width="23" height="32" frameX="0" frameY="-1" frameWidth="23" frameHeight="32"/>
+  <SubTexture name="Player0011" x="48" y="64" width="23" height="32" frameX="0" frameY="-1" frameWidth="23" frameHeight="32"/>
+  <!-- WalkLeft -->
+  <SubTexture name="Player0012" x="168" y="96" width="23" height="32" frameX="0" frameY="-1" frameWidth="23" frameHeight="32"/>
+  <SubTexture name="Player0013" x="144" y="96" width="23" height="32" frameX="0" frameY="-1" frameWidth="23" frameHeight="32"/>
+  <SubTexture name="Player0014" x="168" y="96" width="23" height="32" frameX="0" frameY="-1" frameWidth="23" frameHeight="32"/>
+  <SubTexture name="Player0015" x="192" y="96" width="23" height="32" frameX="0" frameY="-1" frameWidth="23" frameHeight="32"/>
+  <!-- AimUp -->
+  <SubTexture name="Player0016" x="168" y="128" width="23" height="32" frameX="0" frameY="-1" frameWidth="23" frameHeight="32"/>
+  <SubTexture name="Player0017" x="144" y="128" width="23" height="32" frameX="0" frameY="-1" frameWidth="23" frameHeight="32"/>
+  <SubTexture name="Player0018" x="168" y="128" width="23" height="32" frameX="0" frameY="-1" frameWidth="23" frameHeight="32"/>
+  <SubTexture name="Player0019" x="192" y="128" width="23" height="32" frameX="0" frameY="-1" frameWidth="23" frameHeight="32"/>
+  <!-- AimRight -->
+  <SubTexture name="Player0020" x="168" y="160" width="23" height="32" frameX="0" frameY="-1" frameWidth="23" frameHeight="32"/>
+  <SubTexture name="Player0021" x="144" y="160" width="23" height="32" frameX="0" frameY="-1" frameWidth="23" frameHeight="32"/>
+  <SubTexture name="Player0022" x="168" y="160" width="23" height="32" frameX="0" frameY="-1" frameWidth="23" frameHeight="32"/>
+  <SubTexture name="Player0023" x="192" y="160" width="23" height="32" frameX="0" frameY="-1" frameWidth="23" frameHeight="32"/>
+  <!-- AimDown -->
+  <SubTexture name="Player0024" x="168" y="192" width="23" height="32" frameX="0" frameY="-1" frameWidth="23" frameHeight="32"/>
+  <SubTexture name="Player0025" x="144" y="192" width="23" height="32" frameX="0" frameY="-1" frameWidth="23" frameHeight="32"/>
+  <SubTexture name="Player0026" x="168" y="192" width="23" height="32" frameX="0" frameY="-1" frameWidth="23" frameHeight="32"/>
+  <SubTexture name="Player0027" x="192" y="192" width="23" height="32" frameX="0" frameY="-1" frameWidth="23" frameHeight="32"/>
+  <!-- AimLeft -->
+  <SubTexture name="Player0028" x="168" y="224" width="23" height="32" frameX="0" frameY="-1" frameWidth="23" frameHeight="32"/>
+  <SubTexture name="Player0029" x="144" y="224" width="23" height="32" frameX="0" frameY="-1" frameWidth="23" frameHeight="32"/>
+  <SubTexture name="Player0030" x="168" y="224" width="23" height="32" frameX="0" frameY="-1" frameWidth="23" frameHeight="32"/>
+  <SubTexture name="Player0031" x="192" y="224" width="23" height="32" frameX="0" frameY="-1" frameWidth="23" frameHeight="32"/>
+  
 </TextureAtlas>

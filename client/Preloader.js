@@ -20,6 +20,9 @@ SimpleRPG.Preloader.prototype.preload = function () {
   this.load.atlasXML('player', 'images/spritesheets/player.png', 'images/spritesheets/player.xml');
 
   this.load.bitmapFont('font', 'fonts/font.png', 'fonts/font.fnt');
+
+  this.load.tilemap('mainWorld', 'tilemaps/MainWorld.json', null, Phaser.Tilemap.TILED_JSON);
+  this.load.atlasXML('World', 'tilemaps/dg_edging132.gif', 'tilemaps/dg_edging132.xml');
 };
 
 SimpleRPG.Preloader.prototype.create = function () {
