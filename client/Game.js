@@ -23,10 +23,13 @@ SimpleRPG.Game = function (game) {
   this.direction;
   this.keys;
   this.playerVelocity = 50;
+  this.playerRunVelocity = 100;
   this.map;
   this.layer;
   this.aiming;
-  this.collisionGroup;
+  //this.collisionGroup;
+  this.layers;
+  this.tiles;
 };
 
 SimpleRPG.Game.prototype.create = function () {
@@ -48,44 +51,37 @@ SimpleRPG.Game.prototype.buildWorld = function () {
   this.game.physics.ninja.gravity = 0;
 
   this.map = this.game.add.tilemap("mainWorld");
-  this.map.addTilesetImage('World');
-  var layer = this.map.createLayer('Tile Layer 1');
-  this.map.createLayer('Tile Layer 2');
-  layer.resizeWorld();
+  this.map.addTilesetImage('MainWorld00', 'mainWorldImage');
 
-  // Create the objects layer...
-  this.collisionGroup = this.game.add.group();
+  // Create Layers
+  this.layers = [];
+  this.layers.push(this.map.createLayer('WalkableTiles'));
+  this.layers.push(this.map.createLayer('Elevations'));
+  // Don't worry about shadows
+  this.map.createLayer('Shadows');
+  this.layers.push(this.map.createLayer('Decorations'));
+  this.layers[0].resizeWorld();
 
-  var gids = this.map.objects['Object Layer 1'].map(function (a) {
-    return {
-      "gid" : a.gid,
-      "name" : a.name
-    };
-  }).unique();
-
-  for (var i = 0; i < gids.length; i++) {
-    this.map.createFromObjects(
-      'Object Layer 1', 
-      gids[i].gid, 
-      'World', 
-      gids[i].name,
-      true,
-      false,
-      this.collisionGroup);
+  // Generate TileIds
+  var tileIds = this.game.math.numberArray(0, 881);
+  tileIds = tileIds.concat(this.game.math.numberArray(1150-1, 1800-1));
+  var slopeMap = {};
+  for (var i = 0; i < tileIds.length; i++) {
+    slopeMap['' + tileIds[i]] = 1;
   }
 
-   for (var i = 0; i < this.collisionGroup.children.length; i++) {
-     this.game.physics.ninja.enableTile(this.collisionGroup.children[i], Phaser.Physics.Ninja.Tile.FULL);
-   }
-  //this.game.physics.ninja.enableTile(this.collisionGroup);
+  this.tiles = [];
+  for (var i = 0; i < this.layers.length; i++) {
+    this.tiles.push(this.game.physics.ninja.convertTilemap(this.map, this.layers[i], slopeMap));
+  }
 
 };
 
 SimpleRPG.Game.prototype.buildPlayers = function () {
   this.shoot = false;
   this.player = this.game.add.sprite(
-    150,
-    150,
+    200,
+    200,
     'player',
     'Player0000');
   this.player.animations.add('WalkUp', this.game.math.numberArray(0, 3), 4, true);
@@ -100,7 +96,7 @@ SimpleRPG.Game.prototype.buildPlayers = function () {
   this.player.anchor.set(0.5);
   this.checkWorldBounds = true;
   this.game.physics.ninja.enableCircle(this.player, 8);
-
+  this.game.physics.ninja.enableBody(this.player);
   this.camera.follow(this.player);
 
   this.player.play('WalkUp');
@@ -110,15 +106,26 @@ SimpleRPG.Game.prototype.update = function () {
   // set player to collide with layer collision tiles
   var reset = true;
   var shoot = false;
-  this.game.physics.ninja.collide(this.player, this.collisionGroup, 
-    function () {  
-      reset = false;
-      return true; 
-    });
+
+  // Collide with layers
+  for (var i = 0; i < this.tiles.length; i++) {
+    var innerTiles = this.tiles[i];
+    for (var j = 0; j < innerTiles.length; j++) {
+      var isColliding = (this.player.body.circle.collideCircleVsTile(innerTiles[j].tile)) !== undefined;
+      if (isColliding) {
+        reset = false;
+      }
+    }
+  }
+  // this.game.physics.ninja.collide(this.player, this.collisionGroup, 
+  //   function () {  
+  //     reset = false;
+  //     return true; 
+  //   });
 
   // reset player velocity
   if (reset) {
-    this.player.body.reset(this.player.body.x, this.player.body.y, true, true);
+    this.player.body.setZeroVelocity();
   }
 
   // player movement
@@ -133,28 +140,36 @@ SimpleRPG.Game.prototype.update = function () {
   }
 
   if (this.keys.w.isDown) {
-      this.player.body.moveUp(this.playerVelocity);
+      if (!this.check(this.player, this.playerVelocity, "UP")) {
+        this.player.body.moveUp(this.playerVelocity);
+      }
       if (this.aiming) {
         this.player.play('AimUp');
       } else {
         this.player.play('WalkUp');
       }
   } else if (this.keys.s.isDown) {
-      this.player.body.moveDown(this.playerVelocity);
+      if (!this.check(this.player, this.playerVelocity, "DOWN")) {
+        this.player.body.moveDown(this.playerVelocity);
+      }
       if (this.aiming) {
         this.player.play('AimDown');
       } else {
         this.player.play('WalkDown');
       }
   } else if (this.keys.a.isDown) {
-      this.player.body.moveLeft(this.playerVelocity);
+      if (!this.check(this.player, this.playerVelocity, "LEFT")) {
+        this.player.body.moveLeft(this.playerVelocity);
+      }
       if (this.aiming) {
         this.player.play('AimLeft');
       } else {
         this.player.play('WalkLeft');
       }
   } else if (this.keys.d.isDown) {
-      this.player.body.moveRight(this.playerVelocity);
+      if (!this.check(this.player, this.playerVelocity, "RIGHT")) {
+        this.player.body.moveRight(this.playerVelocity);
+      }
       if (this.aiming) {
         this.player.play('AimRight');
       } else {
@@ -163,5 +178,43 @@ SimpleRPG.Game.prototype.update = function () {
   } else {
     
     this.player.animations.stop();
+  }
+};
+
+
+/**
+ * direction = "UP", "RIGHT", "DOWN", "LEFT"
+ */
+SimpleRPG.Game.prototype.check = function (obj, speed, direction) {
+  var checkDistance = speed / 5;
+  // Collide with layers
+  var temp = new Phaser.Rectangle(
+    obj.x - obj.width / 2.0,
+    obj.y - obj.height / 2.0,
+    obj.width,
+    obj.height
+  );
+
+  if (direction === "UP") {
+    temp.y -= checkDistance;
+  }
+  else if (direction === "DOWN") {
+    temp.y += checkDistance;
+  }
+  else if (direction === "LEFT") {
+    temp.x -= checkDistance;
+  }
+  else if (direction === "RIGHT") {
+    temp.x += checkDistance;
+  }
+
+  for (var i = 0; i < this.tiles.length; i++) {
+    var innerTiles = this.tiles[i];
+    for (var j = 0; j < innerTiles.length; j++) {
+      var isColliding = Phaser.Rectangle.intersects(temp, innerTiles[j].tile);
+      if (isColliding) {
+        return true;
+      }
+    }
   }
 };

@@ -29,4 +29,5 @@ SimpleRPG.StartMenu.prototype.create = function () {
  */
 SimpleRPG.StartMenu.prototype.startGame = function (pointer) {
   this.state.start('Game');
+  //this.state.start('Lobby');
 };

@@ -4,6 +4,7 @@ if (Meteor.isClient) {
     game.state.add('Boot', SimpleRPG.Boot);
     game.state.add('Preloader', SimpleRPG.Preloader);
     game.state.add('StartMenu', SimpleRPG.StartMenu);
+    game.state.add('Lobby', SimpleRPG.Lobby);
     game.state.add('Game', SimpleRPG.Game);
     game.state.start('Boot');
   };
