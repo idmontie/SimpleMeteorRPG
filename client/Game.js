@@ -30,6 +30,7 @@ SimpleRPG.Game = function (game) {
   //this.collisionGroup;
   this.layers;
   this.tiles;
+  this.running = false;
 };
 
 SimpleRPG.Game.prototype.create = function () {
@@ -43,6 +44,7 @@ SimpleRPG.Game.prototype.create = function () {
   this.keys.s = this.game.input.keyboard.addKey(Phaser.Keyboard.S);
   this.keys.d = this.game.input.keyboard.addKey(Phaser.Keyboard.D);
   this.keys.space = this.game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
+  this.keys.shift = this.game.input.keyboard.addKey(Phaser.Keyboard.SHIFT);
   
 };
 
@@ -128,6 +130,13 @@ SimpleRPG.Game.prototype.update = function () {
     this.player.body.setZeroVelocity();
   }
 
+  // Running?
+  if (this.keys.shift.isDown) {
+    this.running = true;
+  } else {
+    this.running = false;
+  }
+
   // player movement
   if (this.keys.space.isDown) {
     this.aiming = true;
@@ -139,9 +148,15 @@ SimpleRPG.Game.prototype.update = function () {
     this.aiming = false;
   }
 
+  var speed = this.playerVelocity;
+
+  if (this.running) {
+    speed = this.playerRunVelocity;
+  }
+
   if (this.keys.w.isDown) {
-      if (!this.check(this.player, this.playerVelocity, "UP")) {
-        this.player.body.moveUp(this.playerVelocity);
+      if (!this.check(this.player, speed, "UP")) {
+        this.player.body.moveUp(speed);
       }
       if (this.aiming) {
         this.player.play('AimUp');
@@ -149,8 +164,8 @@ SimpleRPG.Game.prototype.update = function () {
         this.player.play('WalkUp');
       }
   } else if (this.keys.s.isDown) {
-      if (!this.check(this.player, this.playerVelocity, "DOWN")) {
-        this.player.body.moveDown(this.playerVelocity);
+      if (!this.check(this.player, speed, "DOWN")) {
+        this.player.body.moveDown(speed);
       }
       if (this.aiming) {
         this.player.play('AimDown');
@@ -158,8 +173,8 @@ SimpleRPG.Game.prototype.update = function () {
         this.player.play('WalkDown');
       }
   } else if (this.keys.a.isDown) {
-      if (!this.check(this.player, this.playerVelocity, "LEFT")) {
-        this.player.body.moveLeft(this.playerVelocity);
+      if (!this.check(this.player, speed, "LEFT")) {
+        this.player.body.moveLeft(speed);
       }
       if (this.aiming) {
         this.player.play('AimLeft');
@@ -167,8 +182,8 @@ SimpleRPG.Game.prototype.update = function () {
         this.player.play('WalkLeft');
       }
   } else if (this.keys.d.isDown) {
-      if (!this.check(this.player, this.playerVelocity, "RIGHT")) {
-        this.player.body.moveRight(this.playerVelocity);
+      if (!this.check(this.player, speed, "RIGHT")) {
+        this.player.body.moveRight(speed);
       }
       if (this.aiming) {
         this.player.play('AimRight');
