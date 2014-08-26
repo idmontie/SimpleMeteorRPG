@@ -1,6 +1,7 @@
 // MultiClient.js
-
+// Marked for deletion
 (function () {
+
 
   SimpleRPG.MultiClient = function () {
     this.currentPlayer = null;

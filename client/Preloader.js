@@ -29,6 +29,11 @@ SimpleRPG.Preloader.prototype.preload = function () {
 
 SimpleRPG.Preloader.prototype.create = function () {
   this.preloadBar.cropEnabled = false;
+
+  // Ask meteor for player data
+  Meteor.call('create_new_player', Session.get('session_id'), function (e, r) {
+    Session.set('player_data', r);
+  });
 };
 
 SimpleRPG.Preloader.prototype.update = function () {

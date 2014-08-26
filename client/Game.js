@@ -80,10 +80,12 @@ SimpleRPG.Game.prototype.buildWorld = function () {
 };
 
 SimpleRPG.Game.prototype.buildPlayers = function () {
+  var playerData = Session.get('player_data');
+
   this.shoot = false;
   this.player = this.game.add.sprite(
-    200,
-    200,
+    playerData.x,
+    playerData.y,
     'player',
     'Player0000');
   this.player.animations.add('WalkUp', this.game.math.numberArray(0, 3), 4, true);
@@ -194,6 +196,17 @@ SimpleRPG.Game.prototype.update = function () {
     
     this.player.animations.stop();
   }
+
+  // Update Meteor with our data!
+  var player_data = {
+    x : this.player.body.x,
+    y : this.player.body.y,
+    direction : "DOWN", // TODO
+    velocity : 0,
+    state : 'INGAME'
+  };
+
+  Meteor.call('update_player', Session.get('session_id'), player_data);
 };
 
 
