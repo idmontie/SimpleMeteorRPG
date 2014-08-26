@@ -202,10 +202,11 @@ SimpleRPG.Game.prototype.update = function () {
     x : this.player.body.x,
     y : this.player.body.y,
     direction : "DOWN", // TODO
-    velocity : 0,
+    velocity : 0, // TOOD
     state : 'INGAME'
   };
 
+  // TODO ONLY UPDATE CHANGES
   Meteor.call('update_player', Session.get('session_id'), player_data);
 };
 

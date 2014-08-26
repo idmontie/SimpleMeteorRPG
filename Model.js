@@ -24,7 +24,6 @@ new_player = function (session_id) {
   };
 };
 
-//Session.get('session_id')
 if (Meteor.isServer) {
   Future = Npm.require('fibers/future');
 
@@ -35,8 +34,11 @@ if (Meteor.isServer) {
     get_world : function () {
       return Worlds.findOne();
     },
+    /**
+     * Optimizing this doesn't matter.  It happens on the server
+     * end, so the data has already been sent.
+     */
     update_world : function (worldData) {
-      // TODO only update diff
       var id = worldData._id + '';
       delete worldData._id;
       Worlds.update({
@@ -107,12 +109,9 @@ if (Meteor.isServer) {
         return;
       }
 
-      console.log("-------------" + playerIndex);
       for (var n in player_data) { 
         world.players[playerIndex][n] = player_data[n]; 
       }
-
-      console.log(world);
 
       Meteor.call('update_world', world, function () {});
     },
