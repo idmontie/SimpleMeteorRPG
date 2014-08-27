@@ -31,6 +31,7 @@ SimpleRPG.Game = function (game) {
   this.layers;
   this.tiles;
   this.running = false;
+  this.askingForUpdate = false;
 };
 
 SimpleRPG.Game.prototype.create = function () {
@@ -51,6 +52,8 @@ SimpleRPG.Game.prototype.create = function () {
 SimpleRPG.Game.prototype.buildWorld = function () {
   this.game.physics.startSystem(Phaser.Physics.NINJA);
   this.game.physics.ninja.gravity = 0;
+  
+  this.stage.disableVisibilityChange = true;
 
   this.map = this.game.add.tilemap("mainWorld");
   this.map.addTilesetImage('MainWorld00', 'mainWorldImage');
@@ -81,7 +84,7 @@ SimpleRPG.Game.prototype.buildWorld = function () {
 
 SimpleRPG.Game.prototype.buildPlayers = function () {
   var playerData = Session.get('player_data');
-
+  
   this.shoot = false;
   this.player = this.game.add.sprite(
     playerData.x,
@@ -104,12 +107,19 @@ SimpleRPG.Game.prototype.buildPlayers = function () {
   this.camera.follow(this.player);
 
   this.player.play('WalkUp');
+
+  this.otherPlayers = this.game.add.group();
 };
 
 SimpleRPG.Game.prototype.update = function () {
   // set player to collide with layer collision tiles
   var reset = true;
   var shoot = false;
+  var world = Session.get('world');
+
+  var otherPlayers = this.getOtherPlayers(world);
+
+  this.updateOtherPlayers(otherPlayers);
 
   // Collide with layers
   for (var i = 0; i < this.tiles.length; i++) {
@@ -208,8 +218,60 @@ SimpleRPG.Game.prototype.update = function () {
 
   // TODO ONLY UPDATE CHANGES
   Meteor.call('update_player', Session.get('session_id'), player_data);
+  if (!this.askingForUpdate) {
+    this.askingForUpdate = true;
+    var self = this;
+    Meteor.call('get_world', function (e, r) {
+      self.askingForUpdate = false;
+      Session.set('world', r);
+    });
+  }
+  
 };
 
+
+SimpleRPG.Game.prototype.getOtherPlayers = function (world) {
+  var session_id = Session.get('session_id');
+
+  var otherPlayers = [];
+
+  for (var i = 0; i < world.players.length; i++) {
+    if (world.players[i].session_id !== session_id) {
+      otherPlayers.push(world.players[i]);
+    }
+  }
+
+  return otherPlayers;
+};
+
+SimpleRPG.Game.prototype.updateOtherPlayers = function (otherPlayers) {
+  // We are going to merge otherPlayers into this.otherPlayers.
+  // If a player does not exist, we need to create it.
+
+  // Please remember that "this.otherPlayers" is a group.
+
+  if (otherPlayers.length > this.otherPlayers.children.length) {
+    // create sprites for them!
+
+    for (var i = this.otherPlayers.children.length; i < otherPlayers.length; i++) {
+      var temp = this.otherPlayers.create(
+        otherPlayers[i].x,
+        otherPlayers[i].y,
+        'player',
+        'Player0000'
+      );
+
+      temp.anchor.set(0.5);
+      this.game.physics.ninja.enableCircle(temp, 8);
+      this.game.physics.ninja.enableBody(temp);
+    }   
+  }
+
+  for (var i = 0; i < this.otherPlayers.children.length; i++) {
+    this.otherPlayers.children[i].body.x = otherPlayers[i].x;
+    this.otherPlayers.children[i].body.y = otherPlayers[i].y;
+  }
+};
 
 /**
  * direction = "UP", "RIGHT", "DOWN", "LEFT"
