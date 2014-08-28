@@ -34,15 +34,25 @@
       SimpleRPG.Player.STATE.NSHOOT;
 
     /**
-     * check if a bitmask is in a state
+     * Check if the state is in the bit mask.
+     * This is not your normal bitmask comparitor. It will
+     * make sure that the least significant bit to the most
+     * signigicant bit of the state is the same as those
+     * in the bitmask.
+     * 
+     * Only supports 4 bit wide states at 4 bit offsets, aka:
+     * 0x0F0 will check for the bits that "F" takes up, but
+     * 0x1F0 will still only check for the bits that "F" takes up.
+     *
+     * @param hex bitmask
+     * @param hex state
      */
     SimpleRPG.Player.STATE.is = function (bitmask, state) {
-      // Special case for up
-      var s = bitmask.toString(16);
-      
-      if (state == 0 && (s[s.length - 1] === "0"))
-        return true;
-      else if (state == 0) {
+      if (state == SimpleRPG.Player.STATE.IDLE) {
+        var s = bitmask.toString(16);
+        if (s.charAt(s.length - 1) === "0") {
+          return true;
+        }
         return false;
       }
 
@@ -50,10 +60,8 @@
      
       var s = state.toString(16);
       for (var i = s.length - 1; i >= 0 ; --i) {
-        if (s[i] == "0") {
-          offset += 1; 
-        } else {
-          offset += 1;
+        offset += 1;
+        if (s.charAt(i) !== "0") {
           break;
         }
       }
@@ -70,7 +78,6 @@
       } else {
         return false;
       }
-
     };
 
     /**
