@@ -18,6 +18,7 @@ Array.prototype.unique = function(){
 
 SimpleRPG.Game = function (game) {
   this.player;
+  this.playerState;
   this.otherPlayers;
   this.cursors;
   this.direction;
@@ -38,14 +39,14 @@ SimpleRPG.Game.prototype.create = function () {
   this.buildWorld();
   this.buildPlayers();
 
-  // controls
+  // TODO create a control mapper
   this.keys = {};
   this.keys.w = this.game.input.keyboard.addKey(Phaser.Keyboard.W);
   this.keys.a = this.game.input.keyboard.addKey(Phaser.Keyboard.A);
   this.keys.s = this.game.input.keyboard.addKey(Phaser.Keyboard.S);
   this.keys.d = this.game.input.keyboard.addKey(Phaser.Keyboard.D);
   this.keys.space = this.game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
-  this.keys.shift = this.game.input.keyboard.addKey(Phaser.Keyboard.SHIFT);
+  this.keys.shift = this.game.input.keyboard.addKey(Phaser.Keyboard.ENTER);
   
 };
 
@@ -84,21 +85,94 @@ SimpleRPG.Game.prototype.buildWorld = function () {
 
 SimpleRPG.Game.prototype.buildPlayers = function () {
   var playerData = Session.get('player_data');
-  
+  var STATE = SimpleRPG.Player.STATE;
+
   this.shoot = false;
   this.player = this.game.add.sprite(
     playerData.x,
     playerData.y,
     'player',
     'Player0000');
-  this.player.animations.add('WalkUp', this.game.math.numberArray(0, 3), 4, true);
-  this.player.animations.add('WalkRight', this.game.math.numberArray(4, 7), 4, true);
-  this.player.animations.add('WalkDown', this.game.math.numberArray(8, 11), 4, true);
-  this.player.animations.add('WalkLeft', this.game.math.numberArray(12, 15), 4, true);
-  this.player.animations.add('AimUp', this.game.math.numberArray(16, 19), 4, true);
-  this.player.animations.add('AimRight', this.game.math.numberArray(20, 23), 4, true);
-  this.player.animations.add('AimDown', this.game.math.numberArray(24, 27), 4, true);
-  this.player.animations.add('AimLeft', this.game.math.numberArray(28, 31), 4, true);
+
+  // TODO load animations from a seperate class (probably Player.js)
+  // IDLE
+  this.player.animations.add(
+    STATE.nameOf(STATE.IDLE + STATE.NSHOOT + STATE.UP), 
+    this.game.math.numberArray(0, 0), 4, true);
+  this.player.animations.add(
+    STATE.nameOf(STATE.IDLE + STATE.NSHOOT + STATE.RIGHT), 
+    this.game.math.numberArray(4, 4), 4, true);
+  this.player.animations.add(
+    STATE.nameOf(STATE.IDLE + STATE.NSHOOT + STATE.DOWN), 
+    this.game.math.numberArray(8, 8), 4, true);
+  this.player.animations.add(
+    STATE.nameOf(STATE.IDLE + STATE.NSHOOT + STATE.LEFT), 
+    this.game.math.numberArray(12, 12), 4, true);
+  // WALK and NOT SHOOT
+  this.player.animations.add(
+    STATE.nameOf(STATE.WALK + STATE.NSHOOT + STATE.UP), 
+    this.game.math.numberArray(0, 3), 4, true);
+  this.player.animations.add(
+    STATE.nameOf(STATE.WALK + STATE.NSHOOT + STATE.RIGHT), 
+    this.game.math.numberArray(4, 7), 4, true);
+  this.player.animations.add(
+    STATE.nameOf(STATE.WALK + STATE.NSHOOT + STATE.DOWN), 
+    this.game.math.numberArray(8, 11), 4, true);
+  this.player.animations.add(
+    STATE.nameOf(STATE.WALK + STATE.NSHOOT + STATE.LEFT), 
+    this.game.math.numberArray(12, 15), 4, true);
+  // IDLE and SHOOT
+  this.player.animations.add(
+    STATE.nameOf(STATE.IDLE + STATE.SHOOT + STATE.UP), 
+    this.game.math.numberArray(16, 16), 4, true);
+  this.player.animations.add(
+    STATE.nameOf(STATE.IDLE + STATE.SHOOT + STATE.RIGHT), 
+    this.game.math.numberArray(20, 20), 4, true);
+  this.player.animations.add(
+    STATE.nameOf(STATE.IDLE + STATE.SHOOT + STATE.DOWN), 
+    this.game.math.numberArray(24, 24), 4, true);
+  this.player.animations.add(
+    STATE.nameOf(STATE.IDLE + STATE.SHOOT + STATE.LEFT), 
+    this.game.math.numberArray(28, 28), 4, true);
+  // WALK and SHOOT
+  this.player.animations.add(
+    STATE.nameOf(STATE.WALK + STATE.SHOOT + STATE.UP), 
+    this.game.math.numberArray(16, 19), 4, true);
+  this.player.animations.add(
+    STATE.nameOf(STATE.WALK + STATE.SHOOT + STATE.RIGHT), 
+    this.game.math.numberArray(20, 23), 4, true);
+  this.player.animations.add(
+    STATE.nameOf(STATE.WALK + STATE.SHOOT + STATE.DOWN), 
+    this.game.math.numberArray(24, 27), 4, true);
+  this.player.animations.add(
+    STATE.nameOf(STATE.WALK + STATE.SHOOT + STATE.LEFT), 
+    this.game.math.numberArray(28, 31), 4, true);
+  // RUN and NOT SHOOT
+  this.player.animations.add(
+    STATE.nameOf(STATE.RUN + STATE.NSHOOT + STATE.UP), 
+    this.game.math.numberArray(0, 3), 8, true);
+  this.player.animations.add(
+    STATE.nameOf(STATE.RUN + STATE.NSHOOT + STATE.RIGHT), 
+    this.game.math.numberArray(4, 7), 8, true);
+  this.player.animations.add(
+    STATE.nameOf(STATE.RUN + STATE.NSHOOT + STATE.DOWN), 
+    this.game.math.numberArray(8, 11), 8, true);
+  this.player.animations.add(
+    STATE.nameOf(STATE.RUN + STATE.NSHOOT + STATE.LEFT), 
+    this.game.math.numberArray(12, 15), 8, true);
+  // RUN and SHOOT
+  this.player.animations.add(
+    STATE.nameOf(STATE.RUN + STATE.SHOOT + STATE.UP), 
+    this.game.math.numberArray(16, 19), 8, true);
+  this.player.animations.add(
+    STATE.nameOf(STATE.RUN + STATE.SHOOT + STATE.RIGHT), 
+    this.game.math.numberArray(20, 23), 8, true);
+  this.player.animations.add(
+    STATE.nameOf(STATE.RUN + STATE.SHOOT + STATE.DOWN), 
+    this.game.math.numberArray(24, 27), 8, true);
+  this.player.animations.add(
+    STATE.nameOf(STATE.RUN + STATE.SHOOT + STATE.LEFT), 
+    this.game.math.numberArray(28, 31), 8, true);
 
   this.player.anchor.set(0.5);
   this.checkWorldBounds = true;
@@ -106,7 +180,8 @@ SimpleRPG.Game.prototype.buildPlayers = function () {
   this.game.physics.ninja.enableBody(this.player);
   this.camera.follow(this.player);
 
-  this.player.play('WalkUp');
+  this.playerState = SimpleRPG.Player.DEFAULT_STATE;
+  this.player.play(this.playerState);
 
   this.otherPlayers = this.game.add.group();
 };
@@ -116,6 +191,9 @@ SimpleRPG.Game.prototype.update = function () {
   var reset = true;
   var shoot = false;
   var world = Session.get('world');
+  var STATE = SimpleRPG.Player.STATE;
+  var playerState = this.playerState;
+  var speed = this.playerVelocity;
 
   var otherPlayers = this.getOtherPlayers(world);
 
@@ -131,81 +209,61 @@ SimpleRPG.Game.prototype.update = function () {
       }
     }
   }
-  // this.game.physics.ninja.collide(this.player, this.collisionGroup, 
-  //   function () {  
-  //     reset = false;
-  //     return true; 
-  //   });
 
   // reset player velocity
   if (reset) {
     this.player.body.setZeroVelocity();
   }
 
+  // TODO don't map to keys
   // Running?
   if (this.keys.shift.isDown) {
-    this.running = true;
+    playerState = STATE.set(playerState, STATE.RUN);
+    speed = this.playerRunVelocity;
   } else {
-    this.running = false;
+    playerState = STATE.set(playerState, STATE.WALK);
   }
 
   // player movement
   if (this.keys.space.isDown) {
     this.aiming = true;
+    playerState = STATE.set(playerState, STATE.SHOOT);
   } else {
     if (this.aiming == true) {
       shoot = true;
     }
 
     this.aiming = false;
+    playerState = STATE.set(playerState, STATE.NSHOOT);
   }
 
-  var speed = this.playerVelocity;
-
-  if (this.running) {
-    speed = this.playerRunVelocity;
-  }
-
+  
   if (this.keys.w.isDown) {
       if (!this.check(this.player, speed, "UP")) {
         this.player.body.moveUp(speed);
       }
-      if (this.aiming) {
-        this.player.play('AimUp');
-      } else {
-        this.player.play('WalkUp');
-      }
+      playerState = STATE.set(playerState, STATE.UP);
   } else if (this.keys.s.isDown) {
       if (!this.check(this.player, speed, "DOWN")) {
         this.player.body.moveDown(speed);
       }
-      if (this.aiming) {
-        this.player.play('AimDown');
-      } else {
-        this.player.play('WalkDown');
-      }
+      playerState = STATE.set(playerState, STATE.DOWN);
   } else if (this.keys.a.isDown) {
       if (!this.check(this.player, speed, "LEFT")) {
         this.player.body.moveLeft(speed);
       }
-      if (this.aiming) {
-        this.player.play('AimLeft');
-      } else {
-        this.player.play('WalkLeft');
-      }
+      playerState = STATE.set(playerState, STATE.LEFT);
   } else if (this.keys.d.isDown) {
       if (!this.check(this.player, speed, "RIGHT")) {
         this.player.body.moveRight(speed);
       }
-      if (this.aiming) {
-        this.player.play('AimRight');
-      } else {
-        this.player.play('WalkRight');
-      }
+      playerState = STATE.set(playerState, STATE.RIGHT);
   } else {
-    
-    this.player.animations.stop();
+    playerState = STATE.set(playerState, STATE.IDLE);
   }
+
+  this.player.play(STATE.nameOf(playerState));
+  this.playerState = playerState;
 
   // Update Meteor with our data!
   var player_data = {
