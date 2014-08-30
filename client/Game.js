@@ -11,8 +11,6 @@ SimpleRPG.Game = function (game) {
   this.playerRunVelocity = 100;
   this.map;
   this.layer;
-  this.aiming;
-  //this.collisionGroup;
   this.layers;
   this.tiles;
   this.running = false;
@@ -130,14 +128,12 @@ SimpleRPG.Game.prototype.update = function () {
 
   // player movement
   if (this.keys.space.isDown) {
-    this.aiming = true;
-    this.playerModel.shootingState =  SimpleRPG.Player.SHOOTING.SHOOT;
+    this.playerModel.shootingState = SimpleRPG.Player.SHOOTING.SHOOT;
   } else {
-    if (this.aiming == true) {
+    if (this.playerModel.shootingState == SimpleRPG.Player.SHOOTING.SHOOT) {
       shoot = true;
     }
 
-    this.aiming = false;
     this.playerModel.shootingState =  SimpleRPG.Player.SHOOTING.NSHOOT;
   }
 
