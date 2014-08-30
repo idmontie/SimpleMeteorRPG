@@ -13,7 +13,7 @@ new_world = function () {
 };
 
 new_player = function (session_id) {
-  return {
+  var temp =  new SimpleRPG.Player({
     x : 200,
     y : 200,
     direction : "DOWN",
@@ -21,7 +21,9 @@ new_player = function (session_id) {
     state : 'INLOBBY',
     alive : true,
     session_id : session_id
-  };
+  });
+  temp.sessionId = session_id;
+  return temp;
 };
 
 if (Meteor.isServer) {
@@ -48,7 +50,7 @@ if (Meteor.isServer) {
     get_player : function (session_id) {
       var world = Meteor.call('get_world');
       return _.find(world.players, function (player) {
-        if (player.session_id == session_id) {
+        if (player.sessionId == session_id) {
           return true;
         } else {
           return false;
@@ -65,16 +67,16 @@ if (Meteor.isServer) {
       } else {
         // if prev existed, mark as alive  
         var playerIndex = -1;
-      for (var i = 0; i < world.players.length; i++) {
-        if (world.players[i].session_id == session_id) {
-          playerIndex = i;
-          break;
+        for (var i = 0; i < world.players.length; i++) {
+          if (world.players[i].sessionId == session_id) {
+            playerIndex = i;
+            break;
+          }
         }
-      }
 
-      if (playerIndex == -1) {
-        return;
-      }
+        if (playerIndex == -1) {
+          return;
+        }
         world.players[playerIndex].alive = true;
         world.players[playerIndex].state = "INLOBBY";
         
@@ -99,7 +101,7 @@ if (Meteor.isServer) {
 
       var playerIndex = -1;
       for (var i = 0; i < world.players.length; i++) {
-        if (world.players[i].session_id == session_id) {
+        if (world.players[i].sessionId == session_id) {
           playerIndex = i;
           break;
         }

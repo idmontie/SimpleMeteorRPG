@@ -1,125 +1,250 @@
 /**
  * Player Model
+ * @package MeteorModel
  */
+
+ // TODO state
 (function () {
   var requires = [
-    "SimpleRPG",
     "SimpleRPG.GameObject"
   ];
-  var load = function () {
 
+  var load = function () {
     /**
      * Player Constructor
      */
-    SimpleRPG.Player = function () {};
+    SimpleRPG.Player = function (rawData) {
+      this.animationState;
+      this.shootingState;
+      this.sessionId;
 
-    /**
-     * Player States
-     TODO break these states up :(
-     */
-    SimpleRPG.Player.STATE = {
-      'IDLE'      : 0x00000000,
-      'WALK'      : 0x00000001,
-      'RUN'       : 0x00000002,
-
-      'UP'        : (SimpleRPG.DIRECTION.UP << 4),
-      'RIGHT'     : (SimpleRPG.DIRECTION.RIGHT << 4),
-      'DOWN'      : (SimpleRPG.DIRECTION.DOWN << 4),
-      'LEFT'      : (SimpleRPG.DIRECTION.LEFT << 4),
-
-      'NSHOOT'    : 0x00001000,
-      'SHOOT'     : 0x00002000
-
+      // Set defaults
+      this.setDefaults(rawData);
     };
+    /**
+     * Player extends GameObject
+     */
+    SimpleRPG.Player.prototype = new SimpleRPG.GameObject();
 
-    SimpleRPG.Player.DEFAULT_STATE = 
-      SimpleRPG.Player.STATE.IDLE +
-      SimpleRPG.Player.STATE.UP +
-      SimpleRPG.Player.STATE.NSHOOT;
 
     /**
-     * Check if the state is in the bit mask.
-     * This is not your normal bitmask comparitor. It will
-     * make sure that the least significant bit to the most
-     * signigicant bit of the state is the same as those
-     * in the bitmask.
-     * 
-     * Only supports 4 bit wide states at 4 bit offsets, aka:
-     * 0x0F0 will check for the bits that "F" takes up, but
-     * 0x1F0 will still only check for the bits that "F" takes up.
-     *
-     * @param hex bitmask
-     * @param hex state
+     * Static Enum
      */
-    SimpleRPG.Player.STATE.is = function (bitmask, state) {
-      if (state == SimpleRPG.Player.STATE.IDLE) {
-        var s = bitmask.toString(16);
-        if (s.charAt(s.length - 1) === "0") {
-          return true;
-        }
-        return false;
-      }
-
-      var offset = 0;
-     
-      var s = state.toString(16);
-      for (var i = s.length - 1; i >= 0 ; --i) {
-        offset += 1;
-        if (s.charAt(i) !== "0") {
-          break;
-        }
-      }
-
-      // Grab the values at the offset.
-      // They should xor to 0!
-      var a = bitmask.toString(16);
-      a = parseInt(a[a.length - offset], 16);
-      var b = state.toString(16);
-      b = parseInt(b[b.length - offset], 16);
-
-      if ((a ^ b) === 0) {
-        return true;
-      } else {
-        return false;
-      }
+    SimpleRPG.Player.ANIMATION = {
+      'IDLE'      : 0x0,
+      'WALK'      : 0x1,
+      'RUN'       : 0x2
     };
 
     /**
-     * set state
+     * Static Enum
      */
-    SimpleRPG.Player.STATE.set = function (bitmask, state) {
-      var offset = 0;
-      if (state != 0) {
-        var s = state.toString(16);
-        for (var i = s.length; i >= 0 ; --i) { 
-          if (s[i] == "0") {
-            offset += 4; 
-          }
-        }
-      }
-
-      var opFlag = 0xF << offset;
-      return ((bitmask | opFlag) ^ (opFlag - state));
+    SimpleRPG.Player.SHOOTING = {
+      'NSHOOT'    : 0x0,
+      'SHOOT'     : 0x1
     };
 
-    SimpleRPG.Player.STATE.nameOf = function (bitmask) {
+    /**
+     * State Player Method
+     * @return slug
+     */
+    SimpleRPG.Player.getNameOfStates = function (
+      directionState, animationState, shootingState
+      ) {
       var nameArray = [];
-      for (var state in SimpleRPG.Player.STATE) {
-        if (SimpleRPG.Player.STATE.hasOwnProperty(state) &&
-          typeof SimpleRPG.Player.STATE[state] === "number" &&
-          SimpleRPG.Player.STATE.is(bitmask, SimpleRPG.Player.STATE[state])) {
-          
-          nameArray.push(state);
+      nameArray.push(SimpleRPG.GameObject.getDirectionName(directionState));
+      nameArray.push(SimpleRPG.Player.getAnimationName(animationState));
+      nameArray.push(SimpleRPG.Player.getShootingName(shootingState));
+      return nameArray.join('-').toLowerCase();
+    };
+
+    SimpleRPG.Player.prototype.getNameOfStates = function () {
+      return SimpleRPG.Player.getNameOfStates(
+        this.direction,
+        this.animationState,
+        this.shootingState
+        );
+    }
+
+    SimpleRPG.Player.getAnimationName = function (animationState) {
+      for (var prop in SimpleRPG.Player.ANIMATION) {
+        if (SimpleRPG.Player.ANIMATION[prop] === animationState) {
+          return prop;
         }
       }
 
-      return nameArray.join('+');
+      // No direction found, throw!
+      throw 'Not a valid animation!';
     };
 
-    SimpleRPG.Player.STATE.fromName = function (s) {
-      // TODO
+    SimpleRPG.Player.getShootingName = function (shootingState) {
+      for (var prop in SimpleRPG.Player.SHOOTING) {
+        if (SimpleRPG.Player.SHOOTING[prop] === shootingState) {
+          return prop;
+        }
+      }
+
+      // No direction found, throw!
+      throw 'Not a valid shooting state!';
+    }
+
+
+    /**
+     * Set the defaults for the Player object
+     */
+    SimpleRPG.Player.prototype.setDefaults = function (rawData) {
+      rawData = (typeof rawData === "undefined" ? {} : rawData);
+      rawData.x = (typeof rawData.x === "undefined" ? 0 : rawData.x);
+      rawData.y = (typeof rawData.x === "undefined" ? 0 : rawData.y);
+      rawData.sessionId = (typeof rawData.sessionId === "undefined" ? '' : rawData.sessionId);
+
+      this.x = rawData.x;
+      this.y = rawData.y;
+      this.direction = SimpleRPG.GameObject.DIRECTION.UP;
+      this.velocity = 0;
+      this.spriteId = 0;
+      this.sessionId = rawData.sessionId;
+      this.animationState = SimpleRPG.Player.ANIMATION.IDLE;
+      this.shootingState = SimpleRPG.Player.SHOOTING.NSHOOT;
     };
 
+    SimpleRPG.Player.loadAnimationStates = function (phaserPlayer, game) {
+      var a = phaserPlayer.animations;
+
+      // slug => array
+      var animations = [
+        // IDLE
+        [SimpleRPG.Player.getNameOfStates(
+          SimpleRPG.GameObject.DIRECTION.UP,
+          SimpleRPG.Player.ANIMATION.IDLE,
+          SimpleRPG.Player.SHOOTING.NSHOOT
+          ) , game.math.numberArray(0, 0), 4, true],
+        [SimpleRPG.Player.getNameOfStates(
+          SimpleRPG.GameObject.DIRECTION.RIGHT,
+          SimpleRPG.Player.ANIMATION.IDLE,
+          SimpleRPG.Player.SHOOTING.NSHOOT
+          ) , game.math.numberArray(4, 4), 4, true],
+        [SimpleRPG.Player.getNameOfStates(
+          SimpleRPG.GameObject.DIRECTION.DOWN,
+          SimpleRPG.Player.ANIMATION.IDLE,
+          SimpleRPG.Player.SHOOTING.NSHOOT
+          ) , game.math.numberArray(8, 8), 4, true],
+        [SimpleRPG.Player.getNameOfStates(
+          SimpleRPG.GameObject.DIRECTION.LEFT,
+          SimpleRPG.Player.ANIMATION.IDLE,
+          SimpleRPG.Player.SHOOTING.NSHOOT
+          ) , game.math.numberArray(12, 12), 4, true],
+        // WALK and NOT SHOOT
+        [SimpleRPG.Player.getNameOfStates(
+          SimpleRPG.GameObject.DIRECTION.UP,
+          SimpleRPG.Player.ANIMATION.WALK,
+          SimpleRPG.Player.SHOOTING.NSHOOT
+          ) , game.math.numberArray(0, 3), 4, true],
+        [SimpleRPG.Player.getNameOfStates(
+          SimpleRPG.GameObject.DIRECTION.RIGHT,
+          SimpleRPG.Player.ANIMATION.WALK,
+          SimpleRPG.Player.SHOOTING.NSHOOT
+          ) , game.math.numberArray(4, 7), 4, true],
+        [SimpleRPG.Player.getNameOfStates(
+          SimpleRPG.GameObject.DIRECTION.DOWN,
+          SimpleRPG.Player.ANIMATION.WALK,
+          SimpleRPG.Player.SHOOTING.NSHOOT
+          ) , game.math.numberArray(8, 11), 4, true],
+        [SimpleRPG.Player.getNameOfStates(
+          SimpleRPG.GameObject.DIRECTION.LEFT,
+          SimpleRPG.Player.ANIMATION.WALK,
+          SimpleRPG.Player.SHOOTING.NSHOOT
+          ) , game.math.numberArray(12, 15), 4, true],
+        // IDLE and SHOOT
+        [SimpleRPG.Player.getNameOfStates(
+          SimpleRPG.GameObject.DIRECTION.UP,
+          SimpleRPG.Player.ANIMATION.IDLE,
+          SimpleRPG.Player.SHOOTING.SHOOT
+          ) , game.math.numberArray(16, 16), 4, true],
+        [SimpleRPG.Player.getNameOfStates(
+          SimpleRPG.GameObject.DIRECTION.RIGHT,
+          SimpleRPG.Player.ANIMATION.IDLE,
+          SimpleRPG.Player.SHOOTING.SHOOT
+          ) , game.math.numberArray(20, 20), 4, true],
+        [SimpleRPG.Player.getNameOfStates(
+          SimpleRPG.GameObject.DIRECTION.DOWN,
+          SimpleRPG.Player.ANIMATION.IDLE,
+          SimpleRPG.Player.SHOOTING.SHOOT
+          ) , game.math.numberArray(24, 24), 4, true],
+        [SimpleRPG.Player.getNameOfStates(
+          SimpleRPG.GameObject.DIRECTION.LEFT,
+          SimpleRPG.Player.ANIMATION.IDLE,
+          SimpleRPG.Player.SHOOTING.SHOOT
+          ) , game.math.numberArray(28, 28), 4, true],
+        // WALK and SHOOT
+        [SimpleRPG.Player.getNameOfStates(
+          SimpleRPG.GameObject.DIRECTION.UP,
+          SimpleRPG.Player.ANIMATION.WALK,
+          SimpleRPG.Player.SHOOTING.SHOOT
+          ) , game.math.numberArray(16, 19), 4, true],
+        [SimpleRPG.Player.getNameOfStates(
+          SimpleRPG.GameObject.DIRECTION.RIGHT,
+          SimpleRPG.Player.ANIMATION.WALK,
+          SimpleRPG.Player.SHOOTING.SHOOT
+          ) , game.math.numberArray(20, 23), 4, true],
+        [SimpleRPG.Player.getNameOfStates(
+          SimpleRPG.GameObject.DIRECTION.DOWN,
+          SimpleRPG.Player.ANIMATION.WALK,
+          SimpleRPG.Player.SHOOTING.SHOOT
+          ) , game.math.numberArray(24, 27), 4, true],
+        [SimpleRPG.Player.getNameOfStates(
+          SimpleRPG.GameObject.DIRECTION.LEFT,
+          SimpleRPG.Player.ANIMATION.WALK,
+          SimpleRPG.Player.SHOOTING.SHOOT
+          ) , game.math.numberArray(28, 31), 4, true],
+        // RUN and NOT SHOOT
+        [SimpleRPG.Player.getNameOfStates(
+          SimpleRPG.GameObject.DIRECTION.UP,
+          SimpleRPG.Player.ANIMATION.RUN,
+          SimpleRPG.Player.SHOOTING.NSHOOT
+          ) , game.math.numberArray(0, 3), 8, true],
+        [SimpleRPG.Player.getNameOfStates(
+          SimpleRPG.GameObject.DIRECTION.RIGHT,
+          SimpleRPG.Player.ANIMATION.RUN,
+          SimpleRPG.Player.SHOOTING.NSHOOT
+          ) , game.math.numberArray(4, 7), 8, true],
+        [SimpleRPG.Player.getNameOfStates(
+          SimpleRPG.GameObject.DIRECTION.DOWN,
+          SimpleRPG.Player.ANIMATION.RUN,
+          SimpleRPG.Player.SHOOTING.NSHOOT
+          ) , game.math.numberArray(8, 11), 8, true],
+        [SimpleRPG.Player.getNameOfStates(
+          SimpleRPG.GameObject.DIRECTION.LEFT,
+          SimpleRPG.Player.ANIMATION.RUN,
+          SimpleRPG.Player.SHOOTING.NSHOOT
+          ) , game.math.numberArray(12, 15), 8, true],
+        // RUN and SHOOT
+        [SimpleRPG.Player.getNameOfStates(
+          SimpleRPG.GameObject.DIRECTION.UP,
+          SimpleRPG.Player.ANIMATION.RUN,
+          SimpleRPG.Player.SHOOTING.SHOOT
+          ) , game.math.numberArray(16, 19), 8, true],
+        [SimpleRPG.Player.getNameOfStates(
+          SimpleRPG.GameObject.DIRECTION.RIGHT,
+          SimpleRPG.Player.ANIMATION.RUN,
+          SimpleRPG.Player.SHOOTING.SHOOT
+          ) , game.math.numberArray(20, 23), 8, true],
+        [SimpleRPG.Player.getNameOfStates(
+          SimpleRPG.GameObject.DIRECTION.DOWN,
+          SimpleRPG.Player.ANIMATION.RUN,
+          SimpleRPG.Player.SHOOTING.SHOOT
+          ) , game.math.numberArray(24, 27), 8, true],
+        [SimpleRPG.Player.getNameOfStates(
+          SimpleRPG.GameObject.DIRECTION.LEFT,
+          SimpleRPG.Player.ANIMATION.RUN,
+          SimpleRPG.Player.SHOOTING.SHOOT
+          ) , game.math.numberArray(28, 31), 8, true]
+      ];
+
+      for (var i = 0; i < animations.length; i++) {
+        a.add(animations[i][0], animations[i][1], animations[i][2], animations[i][3]);
+      }
+    };
   };
 
   Flint(load, requires);

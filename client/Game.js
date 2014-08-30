@@ -18,7 +18,7 @@ Array.prototype.unique = function(){
 
 SimpleRPG.Game = function (game) {
   this.player;
-  this.playerState;
+  this.playerModel;
   this.otherPlayers;
   this.cursors;
   this.direction;
@@ -84,95 +84,18 @@ SimpleRPG.Game.prototype.buildWorld = function () {
 };
 
 SimpleRPG.Game.prototype.buildPlayers = function () {
-  var playerData = Session.get('player_data');
-  var STATE = SimpleRPG.Player.STATE;
+  var rawData = Session.get('player_data');
+  this.playerModel = new SimpleRPG.Player(rawData);
 
   this.shoot = false;
   this.player = this.game.add.sprite(
-    playerData.x,
-    playerData.y,
+    this.playerModel.x,
+    this.playerModel.y,
     'player',
     'Player0000');
 
-  // TODO load animations from a seperate class (probably Player.js)
-  // IDLE
-  this.player.animations.add(
-    STATE.nameOf(STATE.IDLE + STATE.NSHOOT + STATE.UP), 
-    this.game.math.numberArray(0, 0), 4, true);
-  this.player.animations.add(
-    STATE.nameOf(STATE.IDLE + STATE.NSHOOT + STATE.RIGHT), 
-    this.game.math.numberArray(4, 4), 4, true);
-  this.player.animations.add(
-    STATE.nameOf(STATE.IDLE + STATE.NSHOOT + STATE.DOWN), 
-    this.game.math.numberArray(8, 8), 4, true);
-  this.player.animations.add(
-    STATE.nameOf(STATE.IDLE + STATE.NSHOOT + STATE.LEFT), 
-    this.game.math.numberArray(12, 12), 4, true);
-  // WALK and NOT SHOOT
-  this.player.animations.add(
-    STATE.nameOf(STATE.WALK + STATE.NSHOOT + STATE.UP), 
-    this.game.math.numberArray(0, 3), 4, true);
-  this.player.animations.add(
-    STATE.nameOf(STATE.WALK + STATE.NSHOOT + STATE.RIGHT), 
-    this.game.math.numberArray(4, 7), 4, true);
-  this.player.animations.add(
-    STATE.nameOf(STATE.WALK + STATE.NSHOOT + STATE.DOWN), 
-    this.game.math.numberArray(8, 11), 4, true);
-  this.player.animations.add(
-    STATE.nameOf(STATE.WALK + STATE.NSHOOT + STATE.LEFT), 
-    this.game.math.numberArray(12, 15), 4, true);
-  // IDLE and SHOOT
-  this.player.animations.add(
-    STATE.nameOf(STATE.IDLE + STATE.SHOOT + STATE.UP), 
-    this.game.math.numberArray(16, 16), 4, true);
-  this.player.animations.add(
-    STATE.nameOf(STATE.IDLE + STATE.SHOOT + STATE.RIGHT), 
-    this.game.math.numberArray(20, 20), 4, true);
-  this.player.animations.add(
-    STATE.nameOf(STATE.IDLE + STATE.SHOOT + STATE.DOWN), 
-    this.game.math.numberArray(24, 24), 4, true);
-  this.player.animations.add(
-    STATE.nameOf(STATE.IDLE + STATE.SHOOT + STATE.LEFT), 
-    this.game.math.numberArray(28, 28), 4, true);
-  // WALK and SHOOT
-  this.player.animations.add(
-    STATE.nameOf(STATE.WALK + STATE.SHOOT + STATE.UP), 
-    this.game.math.numberArray(16, 19), 4, true);
-  this.player.animations.add(
-    STATE.nameOf(STATE.WALK + STATE.SHOOT + STATE.RIGHT), 
-    this.game.math.numberArray(20, 23), 4, true);
-  this.player.animations.add(
-    STATE.nameOf(STATE.WALK + STATE.SHOOT + STATE.DOWN), 
-    this.game.math.numberArray(24, 27), 4, true);
-  this.player.animations.add(
-    STATE.nameOf(STATE.WALK + STATE.SHOOT + STATE.LEFT), 
-    this.game.math.numberArray(28, 31), 4, true);
-  // RUN and NOT SHOOT
-  this.player.animations.add(
-    STATE.nameOf(STATE.RUN + STATE.NSHOOT + STATE.UP), 
-    this.game.math.numberArray(0, 3), 8, true);
-  this.player.animations.add(
-    STATE.nameOf(STATE.RUN + STATE.NSHOOT + STATE.RIGHT), 
-    this.game.math.numberArray(4, 7), 8, true);
-  this.player.animations.add(
-    STATE.nameOf(STATE.RUN + STATE.NSHOOT + STATE.DOWN), 
-    this.game.math.numberArray(8, 11), 8, true);
-  this.player.animations.add(
-    STATE.nameOf(STATE.RUN + STATE.NSHOOT + STATE.LEFT), 
-    this.game.math.numberArray(12, 15), 8, true);
-  // RUN and SHOOT
-  this.player.animations.add(
-    STATE.nameOf(STATE.RUN + STATE.SHOOT + STATE.UP), 
-    this.game.math.numberArray(16, 19), 8, true);
-  this.player.animations.add(
-    STATE.nameOf(STATE.RUN + STATE.SHOOT + STATE.RIGHT), 
-    this.game.math.numberArray(20, 23), 8, true);
-  this.player.animations.add(
-    STATE.nameOf(STATE.RUN + STATE.SHOOT + STATE.DOWN), 
-    this.game.math.numberArray(24, 27), 8, true);
-  this.player.animations.add(
-    STATE.nameOf(STATE.RUN + STATE.SHOOT + STATE.LEFT), 
-    this.game.math.numberArray(28, 31), 8, true);
+  SimpleRPG.Player.loadAnimationStates(this.player, this.game);
+
 
   this.player.anchor.set(0.5);
   this.checkWorldBounds = true;
@@ -180,8 +103,7 @@ SimpleRPG.Game.prototype.buildPlayers = function () {
   this.game.physics.ninja.enableBody(this.player);
   this.camera.follow(this.player);
 
-  this.playerState = SimpleRPG.Player.DEFAULT_STATE;
-  this.player.play(this.playerState);
+  this.player.play(this.playerModel.getNameOfStates());
 
   this.otherPlayers = this.game.add.group();
 };
@@ -191,8 +113,6 @@ SimpleRPG.Game.prototype.update = function () {
   var reset = true;
   var shoot = false;
   var world = Session.get('world');
-  var STATE = SimpleRPG.Player.STATE;
-  var playerState = this.playerState;
   var speed = this.playerVelocity;
 
   var otherPlayers = this.getOtherPlayers(world);
@@ -218,23 +138,23 @@ SimpleRPG.Game.prototype.update = function () {
   // TODO don't map to keys
   // Running?
   if (this.keys.shift.isDown) {
-    playerState = STATE.set(playerState, STATE.RUN);
+    this.playerModel.animationState =  SimpleRPG.Player.ANIMATION.RUN;
     speed = this.playerRunVelocity;
   } else {
-    playerState = STATE.set(playerState, STATE.WALK);
+    this.playerModel.animationState =  SimpleRPG.Player.ANIMATION.WALK;
   }
 
   // player movement
   if (this.keys.space.isDown) {
     this.aiming = true;
-    playerState = STATE.set(playerState, STATE.SHOOT);
+    this.playerModel.shootingState =  SimpleRPG.Player.SHOOTING.SHOOT;
   } else {
     if (this.aiming == true) {
       shoot = true;
     }
 
     this.aiming = false;
-    playerState = STATE.set(playerState, STATE.NSHOOT);
+    this.playerModel.shootingState =  SimpleRPG.Player.SHOOTING.NSHOOT;
   }
 
   
@@ -242,40 +162,37 @@ SimpleRPG.Game.prototype.update = function () {
       if (!this.check(this.player, speed, "UP")) {
         this.player.body.moveUp(speed);
       }
-      playerState = STATE.set(playerState, STATE.UP);
+      this.playerModel.direction =  SimpleRPG.GameObject.DIRECTION.UP;
   } else if (this.keys.s.isDown) {
       if (!this.check(this.player, speed, "DOWN")) {
         this.player.body.moveDown(speed);
       }
-      playerState = STATE.set(playerState, STATE.DOWN);
+      this.playerModel.direction =  SimpleRPG.GameObject.DIRECTION.DOWN;
   } else if (this.keys.a.isDown) {
       if (!this.check(this.player, speed, "LEFT")) {
         this.player.body.moveLeft(speed);
       }
-      playerState = STATE.set(playerState, STATE.LEFT);
+      this.playerModel.direction =  SimpleRPG.GameObject.DIRECTION.LEFT;
   } else if (this.keys.d.isDown) {
       if (!this.check(this.player, speed, "RIGHT")) {
         this.player.body.moveRight(speed);
       }
-      playerState = STATE.set(playerState, STATE.RIGHT);
+      this.playerModel.direction =  SimpleRPG.GameObject.DIRECTION.RIGHT;
   } else {
-    playerState = STATE.set(playerState, STATE.IDLE);
+    this.playerModel.animationState =  SimpleRPG.Player.ANIMATION.IDLE;
   }
 
-  this.player.play(STATE.nameOf(playerState));
-  this.playerState = playerState;
+  this.player.play(this.playerModel.getNameOfStates());
 
   // Update Meteor with our data!
-  var player_data = {
-    x : this.player.body.x,
-    y : this.player.body.y,
-    direction : "DOWN", // TODO
-    velocity : 0, // TOOD
-    state : 'INGAME'
-  };
+  // TODO player_data should really be this.playerModel
+  this.playerModel.x = this.player.body.x;
+  this.playerModel.y = this.player.body.y;
+  this.playerModel.velocity = 0; // TODO
+  this.playerModel.state = 'INGAME'; // TODO
 
   // TODO ONLY UPDATE CHANGES
-  Meteor.call('update_player', Session.get('session_id'), player_data);
+  Meteor.call('update_player', Session.get('session_id'), this.playerModel);
   if (!this.askingForUpdate) {
     this.askingForUpdate = true;
     var self = this;
@@ -294,7 +211,7 @@ SimpleRPG.Game.prototype.getOtherPlayers = function (world) {
   var otherPlayers = [];
 
   for (var i = 0; i < world.players.length; i++) {
-    if (world.players[i].session_id !== session_id) {
+    if (world.players[i].sessionId !== session_id) {
       otherPlayers.push(world.players[i]);
     }
   }
