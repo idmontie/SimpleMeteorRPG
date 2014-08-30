@@ -1,6 +1,6 @@
 // Boot.js
 (function () {
-  SimpleRPG = {};
+  SimpleRPG = (typeof SimpleRPG === "undefined" ? {} : SimpleRPG);
 
   SimpleRPG.Boot = function (game) {};
   SimpleRPG.Boot.prototype.preload = function () {

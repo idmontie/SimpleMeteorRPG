@@ -2,7 +2,10 @@
  * Player Model
  */
 (function () {
-  var requires = ["SimpleRPG"];
+  var requires = [
+    "SimpleRPG",
+    "SimpleRPG.GameObject"
+  ];
   var load = function () {
 
     /**
@@ -19,10 +22,10 @@
       'WALK'      : 0x00000001,
       'RUN'       : 0x00000002,
 
-      'UP'        : 0x00000010,
-      'RIGHT'     : 0x00000020,
-      'DOWN'      : 0x00000030,
-      'LEFT'      : 0x00000040,
+      'UP'        : (SimpleRPG.DIRECTION.UP << 4),
+      'RIGHT'     : (SimpleRPG.DIRECTION.RIGHT << 4),
+      'DOWN'      : (SimpleRPG.DIRECTION.DOWN << 4),
+      'LEFT'      : (SimpleRPG.DIRECTION.LEFT << 4),
 
       'NSHOOT'    : 0x00001000,
       'SHOOT'     : 0x00002000
