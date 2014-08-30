@@ -12,6 +12,7 @@
 
     /**
      * Player States
+     TODO break these states up :(
      */
     SimpleRPG.Player.STATE = {
       'IDLE'      : 0x00000000,
