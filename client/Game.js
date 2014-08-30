@@ -1,21 +1,5 @@
 // Game.js
 
-// TODO move to util
-Array.prototype.unique = function(){
-  'use strict';
-  var im = {}, uniq = [];
-  for (var i=0;i<this.length;i++){
-    var type = (this[i]).constructor.name, 
-    //          ^note: for IE use this[i].constructor!
-        val = type + (!/num|str|regex|bool/i.test(type) 
-               ? JSON.stringify(this[i]) 
-               : this[i]);
-    if (!(val in im)){uniq.push(this[i]);}
-    im[val] = 1;
-  }
-  return uniq;
-}
-
 SimpleRPG.Game = function (game) {
   this.player;
   this.playerModel;
@@ -157,7 +141,6 @@ SimpleRPG.Game.prototype.update = function () {
     this.playerModel.shootingState =  SimpleRPG.Player.SHOOTING.NSHOOT;
   }
 
-  
   if (this.keys.w.isDown) {
       if (!this.check(this.player, speed, "UP")) {
         this.player.body.moveUp(speed);
@@ -239,12 +222,19 @@ SimpleRPG.Game.prototype.updateOtherPlayers = function (otherPlayers) {
       temp.anchor.set(0.5);
       this.game.physics.ninja.enableCircle(temp, 8);
       this.game.physics.ninja.enableBody(temp);
+
+      SimpleRPG.Player.loadAnimationStates(temp, this.game);
     }   
   }
 
   for (var i = 0; i < this.otherPlayers.children.length; i++) {
     this.otherPlayers.children[i].body.x = otherPlayers[i].x;
     this.otherPlayers.children[i].body.y = otherPlayers[i].y;
+    this.otherPlayers.children[i].play(SimpleRPG.Player.getNameOfStates(
+        otherPlayers[i].direction,
+        otherPlayers[i].animationState,
+        otherPlayers[i].shootingState
+      ));
   }
 };
 
