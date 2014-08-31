@@ -1,5 +1,0 @@
-// Lobby
-
-(function () {
-  
-})();

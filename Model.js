@@ -1,4 +1,9 @@
-// Model.js
+/**
+ * Model.js
+ *
+ * Contains functionality that both the Server and
+ * the Client will use that concerns the database.
+ */
 
 Worlds = new Meteor.Collection('worlds');
 
@@ -133,9 +138,8 @@ if (Meteor.isServer) {
 }
 
 Meteor.startup(function () {
-  
-  // Make sure the client has a session id
   if (Meteor.isClient) {
+    // Make sure the client has a session id
     var session_id = amplify.store('session_id');
 
     if (session_id == null) {
@@ -145,12 +149,10 @@ Meteor.startup(function () {
 
     Session.set('session_id', session_id);
   }
-
-  // Make sure the server has a new world when we resart.
-
-  // TODO, make the server grab the last world when we are done finalizes what a world looks like.
   if (Meteor.isServer) {
-    
+    // Make sure the server has a new world when we resart.
+    // TODO, make the server grab the last world when we are done finalizes what a world looks like.
+  
     var world = Worlds.findOne();
 
     if (world != null) {
@@ -158,7 +160,6 @@ Meteor.startup(function () {
     } 
 
     var _id = Worlds.insert(new_world());
-
 
     Meteor.publish('worlds', function () {
       return Worlds.find({"_id" : _id});

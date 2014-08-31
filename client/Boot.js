@@ -1,13 +1,29 @@
-// Boot.js
+/**
+ * Boot.js
+ *
+ * Set up Phaser.
+ * Start the Preloader.
+ */
 (function () {
   SimpleRPG = (typeof SimpleRPG === "undefined" ? {} : SimpleRPG);
 
+  /**
+   * Boot
+   * @param game
+   */
   SimpleRPG.Boot = function (game) {};
+
+  /**
+   * Load loading images.
+   */
   SimpleRPG.Boot.prototype.preload = function () {
     this.load.image('preloaderBar', 'images/preloaderBar.png');
     this.load.image('titleImage', 'images/titleImage.png');
   };
 
+  /**
+   * Set up Phaser settings
+   */
   SimpleRPG.Boot.prototype.create = function () {
     this.input.maxPointers = 1;
     this.stage.disableVisibilityChange = false;
