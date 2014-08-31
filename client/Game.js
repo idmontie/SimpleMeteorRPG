@@ -1,5 +1,15 @@
-// Game.js
+/**
+ * Game
+ * 
+ * Handles Game logic for the local player.
+ */
+ (function () {
 
+/**
+ * Game
+ * 
+ * @param game the game instance
+ */
 SimpleRPG.Game = function (game) {
   this.player;
   this.playerModel;
@@ -17,6 +27,10 @@ SimpleRPG.Game = function (game) {
   this.askingForUpdate = false;
 };
 
+/**
+ * Create, called by Phaser
+ *
+ */
 SimpleRPG.Game.prototype.create = function () {
   this.buildWorld();
   this.buildPlayers();
@@ -32,6 +46,11 @@ SimpleRPG.Game.prototype.create = function () {
   
 };
 
+/**
+ * Build the world
+ * 
+ * TODO move this to a World.js or something
+ */
 SimpleRPG.Game.prototype.buildWorld = function () {
   this.game.physics.startSystem(Phaser.Physics.NINJA);
   this.game.physics.ninja.gravity = 0;
@@ -65,6 +84,10 @@ SimpleRPG.Game.prototype.buildWorld = function () {
 
 };
 
+/**
+ * Build the player.  Sets animations and current state from the
+ * session player_data
+ */
 SimpleRPG.Game.prototype.buildPlayers = function () {
   var rawData = Session.get('player_data');
   this.playerModel = new SimpleRPG.Player(rawData);
@@ -90,6 +113,9 @@ SimpleRPG.Game.prototype.buildPlayers = function () {
   this.otherPlayers = this.game.add.group();
 };
 
+/**
+ * Called by Phaser
+ */
 SimpleRPG.Game.prototype.update = function () {
   // set player to collide with layer collision tiles
   var reset = true;
@@ -183,7 +209,11 @@ SimpleRPG.Game.prototype.update = function () {
   
 };
 
-
+/**
+ * Determine who is an "other player"
+ *
+ * @param world A world object with other players.
+ */
 SimpleRPG.Game.prototype.getOtherPlayers = function (world) {
   var session_id = Session.get('session_id');
 
@@ -198,6 +228,10 @@ SimpleRPG.Game.prototype.getOtherPlayers = function (world) {
   return otherPlayers;
 };
 
+/**
+ * update function to make sure that otherPlayers have sprites
+ * and correct positions and tweening.
+ */
 SimpleRPG.Game.prototype.updateOtherPlayers = function (otherPlayers) {
   // We are going to merge otherPlayers into this.otherPlayers.
   // If a player does not exist, we need to create it.
@@ -270,3 +304,5 @@ SimpleRPG.Game.prototype.check = function (obj, speed, direction) {
     }
   }
 };
+
+})();
