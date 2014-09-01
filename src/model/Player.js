@@ -1,9 +1,8 @@
 /**
  * Player Model
- * @package MeteorModel
+ * @package Model
  */
 
- // TODO state
 (function () {
   var requires = [
     "SimpleRPG.GameObject"
@@ -22,11 +21,11 @@
       // Set defaults
       this.setDefaults(rawData);
     };
+
     /**
      * Player extends GameObject
      */
     SimpleRPG.Player.prototype = new SimpleRPG.GameObject();
-
 
     /**
      * Static Enum

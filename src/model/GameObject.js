@@ -6,7 +6,7 @@
  * These will map to local sprites on the user's
  * machine.
  *
- * @package MeteorModel
+ * @package Model
  */
 (function () {
   // Make sure SimpleRPG is defined
