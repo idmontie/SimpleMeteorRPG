@@ -118,14 +118,13 @@ SimpleRPG.Game.prototype.buildPlayers = function () {
  */
 SimpleRPG.Game.prototype.update = function () {
   // set player to collide with layer collision tiles
+  var self = this;
   var reset = true;
   var shoot = false;
   var world = Session.get('world');
   var speed = this.playerVelocity;
 
   var otherPlayers = this.getOtherPlayers(world);
-
-  this.updateOtherPlayers(otherPlayers);
 
   // Collide with layers
   for (var i = 0; i < this.tiles.length; i++) {
@@ -203,6 +202,8 @@ SimpleRPG.Game.prototype.update = function () {
   Meteor.call('update_player', Session.get('session_id'), this.playerModel);
   if (!this.askingForUpdate) {
     this.askingForUpdate = true;
+    // TODO we only run this if we get an update!
+    self.updateOtherPlayers(otherPlayers);
     var self = this;
     Meteor.call('get_world', function (e, r) {
       self.askingForUpdate = false;
@@ -241,6 +242,17 @@ SimpleRPG.Game.prototype.updateOtherPlayers = function (otherPlayers) {
 
   // Please remember that "this.otherPlayers" is a group.
 
+  // Stop all tweens
+  var tweens = this.game.tweens.getAll();
+
+  for (var i = 0; i < tweens.length; i++) {
+    var values = tweens[i]._valuesEnd;
+    tweens[i]._object.x = values.x;
+    tweens[i]._object.y = values.y;
+    tweens[i]._object.setZeroVelocity();
+    tweens[i].stop();
+  }
+
   if (otherPlayers.length > this.otherPlayers.children.length) {
     // create sprites for them!
 
@@ -253,8 +265,9 @@ SimpleRPG.Game.prototype.updateOtherPlayers = function (otherPlayers) {
       );
 
       temp.anchor.set(0.5);
-      this.game.physics.ninja.enableCircle(temp, 8);
+      //this.game.physics.ninja.enableCircle(temp, 8);
       this.game.physics.ninja.enableBody(temp);
+      temp.body.moves = false;
 
       SimpleRPG.Player.loadAnimationStates(temp, this.game);
     }   
@@ -270,10 +283,27 @@ SimpleRPG.Game.prototype.updateOtherPlayers = function (otherPlayers) {
     }
 
     // TODO tweens
-    this.otherPlayers.children[i].body.x = otherPlayers[i].x;
-    this.otherPlayers.children[i].body.y = otherPlayers[i].y;
-    this.otherPlayers.children[i].body.velocity.x = otherPlayers[i].velocity.x;
-    this.otherPlayers.children[i].body.velocity.y = otherPlayers[i].velocity.y;
+    console.log(
+parseInt(this.otherPlayers.children[i].body.x, 10),
+parseInt(otherPlayers[i].x, 10),
+parseInt(this.otherPlayers.children[i].body.y, 10),
+parseInt(otherPlayers[i].y, 10)
+      );
+    if (parseInt(this.otherPlayers.children[i].body.x, 10) != parseInt(otherPlayers[i].x, 10) ||
+      parseInt(this.otherPlayers.children[i].body.y, 10) != parseInt(otherPlayers[i].y, 10)) {
+      this.game.add.tween(this.otherPlayers.children[i].body).to({
+          x : otherPlayers[i].x,
+          y : otherPlayers[i].y
+        },
+        1000,
+        Phaser.Easing.Linear.None,
+        true);
+    }
+
+    // this.otherPlayers.children[i].body.x = otherPlayers[i].x;
+    // this.otherPlayers.children[i].body.y = otherPlayers[i].y;
+    // this.otherPlayers.children[i].body.velocity.x = otherPlayers[i].velocity.x;
+    // this.otherPlayers.children[i].body.velocity.y = otherPlayers[i].velocity.y;
     this.otherPlayers.children[i].play(SimpleRPG.Player.getNameOfStates(
         otherPlayers[i].direction,
         otherPlayers[i].animationState,

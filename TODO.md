@@ -13,9 +13,6 @@ TODO
 * IDLE players get changed to INLOBBY
 * Fix memory leak on server
 
-Flingy
-* type
-
 Enemy
 * state
 * health
