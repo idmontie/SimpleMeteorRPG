@@ -193,8 +193,11 @@ SimpleRPG.Game.prototype.update = function () {
   // TODO player_data should really be this.playerModel
   this.playerModel.x = this.player.body.x;
   this.playerModel.y = this.player.body.y;
-  this.playerModel.velocity = 0; // TODO
-  this.playerModel.state = 'INGAME'; // TODO
+  this.playerModel.velocity = [
+    this.player.body.velocity.x,
+    this.player.body.velocity.y
+  ];
+  this.playerModel.state = 'INGAME';
 
   // TODO ONLY UPDATE CHANGES
   Meteor.call('update_player', Session.get('session_id'), this.playerModel);
@@ -258,8 +261,19 @@ SimpleRPG.Game.prototype.updateOtherPlayers = function (otherPlayers) {
   }
 
   for (var i = 0; i < this.otherPlayers.children.length; i++) {
+    if (otherPlayers[i].state == "INLOBBY") {
+      // TODO hide
+      this.otherPlayers.children[i].visible = false;
+      continue;
+    } else {
+      this.otherPlayers.children[i].visible = true;
+    }
+
+    // TODO tweens
     this.otherPlayers.children[i].body.x = otherPlayers[i].x;
     this.otherPlayers.children[i].body.y = otherPlayers[i].y;
+    this.otherPlayers.children[i].body.velocity.x = otherPlayers[i].velocity.x;
+    this.otherPlayers.children[i].body.velocity.y = otherPlayers[i].velocity.y;
     this.otherPlayers.children[i].play(SimpleRPG.Player.getNameOfStates(
         otherPlayers[i].direction,
         otherPlayers[i].animationState,

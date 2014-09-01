@@ -17,6 +17,7 @@
       this.animationState;
       this.shootingState;
       this.sessionId;
+      this.health;
 
       // Set defaults
       this.setDefaults(rawData);
@@ -101,11 +102,12 @@
       this.x = rawData.x;
       this.y = rawData.y;
       this.direction = SimpleRPG.GameObject.DIRECTION.UP;
-      this.velocity = 0;
+      this.velocity = [0, 0];
       this.spriteId = 0;
       this.sessionId = rawData.sessionId;
       this.animationState = SimpleRPG.Player.ANIMATION.IDLE;
       this.shootingState = SimpleRPG.Player.SHOOTING.NSHOOT;
+      this.health = 1000;
     };
 
     SimpleRPG.Player.loadAnimationStates = function (phaserPlayer, game) {
