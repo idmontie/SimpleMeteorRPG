@@ -48,9 +48,7 @@
      * State Player Method
      * @return slug
      */
-    SimpleRPG.Player.getNameOfStates = function (
-      directionState, animationState, shootingState
-      ) {
+    SimpleRPG.Player.getNameOfStates = function (directionState, animationState, shootingState) {
       var nameArray = [];
       nameArray.push(SimpleRPG.GameObject.getDirectionName(directionState));
       nameArray.push(SimpleRPG.Player.getAnimationName(animationState));
