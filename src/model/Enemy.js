@@ -45,7 +45,7 @@
     SimpleRPG.Enemy.prototype.getNameOfStates = function () {
       return SimpleRPG.Enemy.getNameOfStates(
         this.direction,
-        this.animationState,
+        this.animationState
         );
     }
 
@@ -65,6 +65,7 @@
       rawData.x = (typeof rawData.x === "undefined" ? 0 : rawData.x);
       rawData.y = (typeof rawData.x === "undefined" ? 0 : rawData.y);
       rawData.sessionId = (typeof rawData.sessionId === "undefined" ? '' : rawData.sessionId);
+      rawData.type = (typeof rawData.type === "undefined" ? 0 : rawData.type);
 
       this.x = rawData.x;
       this.y = rawData.y;
@@ -73,9 +74,10 @@
       this.spriteId = 0;
       this.sessionId = rawData.sessionId;
       this.animationState = SimpleRPG.Enemy.ANIMATION.IDLE;
+      this.type = rawData.type;
       this.health = 1000;
     };
   };
 
   Flint(load, requires);
-});
+})();

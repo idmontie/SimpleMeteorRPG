@@ -283,12 +283,6 @@ SimpleRPG.Game.prototype.updateOtherPlayers = function (otherPlayers) {
     }
 
     // TODO tweens
-    console.log(
-parseInt(this.otherPlayers.children[i].body.x, 10),
-parseInt(otherPlayers[i].x, 10),
-parseInt(this.otherPlayers.children[i].body.y, 10),
-parseInt(otherPlayers[i].y, 10)
-      );
     if (parseInt(this.otherPlayers.children[i].body.x, 10) != parseInt(otherPlayers[i].x, 10) ||
       parseInt(this.otherPlayers.children[i].body.y, 10) != parseInt(otherPlayers[i].y, 10)) {
       this.game.add.tween(this.otherPlayers.children[i].body).to({

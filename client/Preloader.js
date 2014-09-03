@@ -25,6 +25,7 @@
 
     // Start Loading
     this.load.atlasXML('player', 'images/spritesheets/player.png', 'images/spritesheets/player.xml');
+    //this.load.atlasXML('enemy_00', 'images/spritesheets/enemy_00.png', 'images/spritesheets/enemy_00.xml');
 
     this.load.bitmapFont('font', 'fonts/font.png', 'fonts/font.fnt');
 

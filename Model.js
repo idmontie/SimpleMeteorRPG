@@ -11,7 +11,8 @@ new_world = function () {
   var world = {
     name : "test-world",
     players :[],
-    flingys : []
+    flingys : [],
+    enemies : []
   };
 
   return world;
@@ -35,9 +36,6 @@ if (Meteor.isServer) {
   Future = Npm.require('fibers/future');
 
   Meteor.methods({
-    test : function () {
-      return 2;
-    },
     get_world : function () {
       return Worlds.findOne();
     },
@@ -46,6 +44,8 @@ if (Meteor.isServer) {
      * end, so the data has already been sent.
      */
     update_world : function (worldData) {
+      // TODO, this needs to be updated so that updates
+      // dont overwrite each other
       var id = worldData._id + '';
       delete worldData._id;
       Worlds.update({
@@ -120,7 +120,16 @@ if (Meteor.isServer) {
         world.players[playerIndex][n] = player_data[n]; 
       }
 
-      Meteor.call('update_world', world, function () {});
+      var data = {};
+      data['players.' + playerIndex] = player_data;
+
+      //Meteor.call('update_world', world, function () {});
+      var id = world._id + '';
+      Worlds.update({
+        _id : id
+      }, {
+        $set : data
+      });
     },
     player_die : function (session_id) {
       // mark player as dead.

@@ -13,5 +13,11 @@ if (Meteor.isClient) {
 if (Meteor.isServer) {
   Meteor.startup(function () {
     // code to run on server at startup
+    var server = new SimpleRPG.Server();
+    Meteor.setInterval((function(self) {
+         return function() {
+             self.run();
+         }
+     })(server), 1000);
   });
 }
