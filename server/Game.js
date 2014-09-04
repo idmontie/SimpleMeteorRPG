@@ -33,18 +33,25 @@
   };
 
   SimpleRPG.Server.prototype.spawnEnemy = function () {
+    var world = Worlds.findOne();
+
     // Create an enemy
     var enemy = new SimpleRPG.Enemy({
-      x : 0,
-      y : 0,
+      x : parseInt(Random.fraction() * world.width),
+      y : parseInt(Random.fraction() * world.height),
       sessionId : 'server',
       type : 'enemy_00'
     });
 
-    var world = Worlds.findOne();
     world.enemies.push(enemy);
-    
 
+    Worlds.update({
+        _id : world._id
+      }, {
+        $push : {
+          'enemies' : enemy
+        }
+      });
   };
 
   SimpleRPG.Server.prototype.updateEnemies = function () {

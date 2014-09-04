@@ -12,7 +12,9 @@ new_world = function () {
     name : "test-world",
     players :[],
     flingys : [],
-    enemies : []
+    enemies : [],
+    width : 0,  // TODO
+    height : 0  // TODO
   };
 
   return world;
@@ -89,6 +91,7 @@ if (Meteor.isServer) {
         player = world.players[playerIndex];
       }
       
+      // TODO no more calling update world
       Meteor.call('update_world', world, function () {});
       return player;
     },
@@ -123,10 +126,8 @@ if (Meteor.isServer) {
       var data = {};
       data['players.' + playerIndex] = player_data;
 
-      //Meteor.call('update_world', world, function () {});
-      var id = world._id + '';
       Worlds.update({
-        _id : id
+        _id : world._id
       }, {
         $set : data
       });
