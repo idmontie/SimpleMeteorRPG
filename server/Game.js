@@ -55,7 +55,7 @@
   };
 
   SimpleRPG.Server.prototype.updateEnemies = function () {
-
+    var world = Worlds.findOne();
   };
 
   SimpleRPG.Server.prototype.run = function () {

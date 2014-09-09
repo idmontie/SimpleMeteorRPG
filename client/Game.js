@@ -44,6 +44,13 @@ SimpleRPG.Game.prototype.create = function () {
   this.keys.space = this.game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
   this.keys.shift = this.game.input.keyboard.addKey(Phaser.Keyboard.ENTER);
   
+  var self = this;
+  setInterval(function () {
+    Meteor.call('get_world', function (e, r) {
+      self.askingForUpdate = false;
+      Session.set('world', r);
+    });
+  }, 500);
 };
 
 /**
@@ -124,8 +131,6 @@ SimpleRPG.Game.prototype.update = function () {
   var world = Session.get('world');
   var speed = this.playerVelocity;
 
-  var otherPlayers = this.getOtherPlayers(world);
-
   // Collide with layers
   for (var i = 0; i < this.tiles.length; i++) {
     var innerTiles = this.tiles[i];
@@ -201,16 +206,12 @@ SimpleRPG.Game.prototype.update = function () {
   // TODO ONLY UPDATE CHANGES
   Meteor.call('update_player', Session.get('session_id'), this.playerModel);
   if (!this.askingForUpdate) {
-    this.askingForUpdate = true;
     // TODO we only run this if we get an update!
-    self.updateOtherPlayers(otherPlayers);
-    var self = this;
-    Meteor.call('get_world', function (e, r) {
-      self.askingForUpdate = false;
-      Session.set('world', r);
-    });
+    world = Session.get('world');
+    var otherPlayers = this.getOtherPlayers(world);
+    this.updateOtherPlayers(otherPlayers);
+    this.askingForUpdate = true;
   }
-  
 };
 
 /**
@@ -265,10 +266,8 @@ SimpleRPG.Game.prototype.updateOtherPlayers = function (otherPlayers) {
       );
 
       temp.anchor.set(0.5);
-      //this.game.physics.ninja.enableCircle(temp, 8);
       this.game.physics.ninja.enableBody(temp);
       temp.body.moves = false;
-
       SimpleRPG.Player.loadAnimationStates(temp, this.game);
     }   
   }
@@ -283,21 +282,20 @@ SimpleRPG.Game.prototype.updateOtherPlayers = function (otherPlayers) {
     }
 
     // TODO tweens
-    if (parseInt(this.otherPlayers.children[i].body.x, 10) != parseInt(otherPlayers[i].x, 10) ||
-      parseInt(this.otherPlayers.children[i].body.y, 10) != parseInt(otherPlayers[i].y, 10)) {
+    //if (parseInt(this.otherPlayers.children[i].body.x, 10) != parseInt(otherPlayers[i].x, 10) ||
+    //  parseInt(this.otherPlayers.children[i].body.y, 10) != parseInt(otherPlayers[i].y, 10)) {
       this.game.add.tween(this.otherPlayers.children[i].body).to({
           x : otherPlayers[i].x,
           y : otherPlayers[i].y
         },
-        1000,
+        500,
         Phaser.Easing.Linear.None,
         true);
-    }
-
-    // this.otherPlayers.children[i].body.x = otherPlayers[i].x;
-    // this.otherPlayers.children[i].body.y = otherPlayers[i].y;
-    // this.otherPlayers.children[i].body.velocity.x = otherPlayers[i].velocity.x;
-    // this.otherPlayers.children[i].body.velocity.y = otherPlayers[i].velocity.y;
+  // } else {
+     // this.otherPlayers.children[i].body.x = otherPlayers[i].x;
+     // this.otherPlayers.children[i].body.y = otherPlayers[i].y;
+  //  }
+    
     this.otherPlayers.children[i].play(SimpleRPG.Player.getNameOfStates(
         otherPlayers[i].direction,
         otherPlayers[i].animationState,
