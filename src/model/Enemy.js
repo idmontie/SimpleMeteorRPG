@@ -11,6 +11,9 @@
   var load = function () {
     /**
      * Enemy Constructor
+     * 
+     * @constructor
+     * @param Object rawData
      */
     SimpleRPG.Enemy = function (rawData) {
       this.animationState;
@@ -35,6 +38,14 @@
       'ATTACKING' : 0x2
     };
 
+    /**
+     * Get the slug version name of the given states.
+     * 
+     * @param String directionState
+     * @param String animationState
+     *
+     * @return String
+     */
     SimpleRPG.Enemy.getNameOfStates = function (direcitonState, animationState) {
       var nameArray = [];
       nameArray.push(SimpleRPG.GameObject.getDirectionName(directionState));
@@ -42,6 +53,11 @@
       return namArray.join('-').toLowerCase();
     };
 
+    /**
+     * Get the slug version name of the states of this object.
+     *
+     * @return String
+     */
     SimpleRPG.Enemy.prototype.getNameOfStates = function () {
       return SimpleRPG.Enemy.getNameOfStates(
         this.direction,
@@ -49,6 +65,14 @@
         );
     }
 
+    /**
+     * Get the name of the animation
+     *
+     * @throws Exception
+     * @param String animationState
+     *
+     * @return String
+     */
     SimpleRPG.Enemy.getAnimationName = function (animationState) {
       for (var prop in SimpleRPG.Player.ANIMATION) {
         if (SimpleRPG.Enemy.ANIMATION[prop] === animationState) {
@@ -60,6 +84,11 @@
       throw 'Not a valid animation!';
     };
 
+    /**
+     * Set the default variables for this object
+     *
+     * @param Object rawData
+     */
     SimpleRPG.Enemy.prototype.setDefaults = function (rawData) {
       rawData = (typeof rawData === "undefined" ? {} : rawData);
       rawData.x = (typeof rawData.x === "undefined" ? 0 : rawData.x);

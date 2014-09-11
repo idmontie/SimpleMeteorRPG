@@ -11,6 +11,9 @@
   var load = function () {
     /**
      * Player Constructor
+     * 
+     * @constructor
+     * @param Object rawData
      */
     SimpleRPG.Player = function (rawData) {
       this.animationState;
@@ -46,7 +49,12 @@
 
     /**
      * State Player Method
-     * @return slug
+     *
+     * @param String directionState
+     * @param String animationState
+     * @param String shootingState
+     *
+     * @return String slug
      */
     SimpleRPG.Player.getNameOfStates = function (directionState, animationState, shootingState) {
       var nameArray = [];
@@ -56,6 +64,11 @@
       return nameArray.join('-').toLowerCase();
     };
 
+    /**
+     * Get the name of the current states of this object
+     *
+     * @return String
+     */
     SimpleRPG.Player.prototype.getNameOfStates = function () {
       return SimpleRPG.Player.getNameOfStates(
         this.direction,
@@ -64,6 +77,14 @@
         );
     }
 
+    /**
+     * Get the name of the animation state
+     *
+     * @throws Exception
+     * @param String animationState
+     *
+     * @return String
+     */
     SimpleRPG.Player.getAnimationName = function (animationState) {
       for (var prop in SimpleRPG.Player.ANIMATION) {
         if (SimpleRPG.Player.ANIMATION[prop] === animationState) {
@@ -75,6 +96,14 @@
       throw 'Not a valid animation!';
     };
 
+    /**
+     * Get the name of the shooting state
+     *
+     * @throws Exception
+     * @param String shootingState
+     *
+     * @return String
+     */
     SimpleRPG.Player.getShootingName = function (shootingState) {
       for (var prop in SimpleRPG.Player.SHOOTING) {
         if (SimpleRPG.Player.SHOOTING[prop] === shootingState) {
@@ -89,6 +118,8 @@
 
     /**
      * Set the defaults for the Player object
+     *
+     * @param String rawData
      */
     SimpleRPG.Player.prototype.setDefaults = function (rawData) {
       rawData = (typeof rawData === "undefined" ? {} : rawData);
@@ -107,6 +138,12 @@
       this.health = 1000;
     };
 
+    /**
+     * Load the animations states for a player
+     *
+     * @param Object phaserPlayer the phaser game object to add the animation states to.
+     * @param Object game the phase game object.
+     */
     SimpleRPG.Player.loadAnimationStates = function (phaserPlayer, game) {
       var a = phaserPlayer.animations;
 
