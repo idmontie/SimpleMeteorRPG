@@ -14,6 +14,7 @@ SimpleRPG.Game = function (game) {
   this.player;
   this.playerModel;
   this.otherPlayers;
+  this.enemies;
   this.cursors;
   this.direction;
   this.keys;
@@ -53,7 +54,7 @@ SimpleRPG.Game.prototype.create = function () {
   }, 500);
 };
 
-/**
+/**ene
  * Build the world
  * 
  * TODO move this to a World.js or something
@@ -118,6 +119,7 @@ SimpleRPG.Game.prototype.buildPlayers = function () {
   this.player.play(this.playerModel.getNameOfStates());
 
   this.otherPlayers = this.game.add.group();
+  this.enemies = this.game.add.group();
 };
 
 /**
@@ -210,6 +212,7 @@ SimpleRPG.Game.prototype.update = function () {
     world = Session.get('world');
     var otherPlayers = this.getOtherPlayers(world);
     this.updateOtherPlayers(otherPlayers);
+    this.updateEnemies(world);
     this.askingForUpdate = true;
   }
 };
@@ -300,6 +303,47 @@ SimpleRPG.Game.prototype.updateOtherPlayers = function (otherPlayers) {
         otherPlayers[i].direction,
         otherPlayers[i].animationState,
         otherPlayers[i].shootingState
+      ));
+  }
+};
+
+/**
+ * Update where enemies are and are going.
+ *
+ * @param PhaserObject world 
+ */
+SimpleRPG.Game.prototype.updateEnemies = function (world) {
+  var enemies = world.enemies;
+
+  if (enemies.length > this.enemies.children.length) {
+    // create sprites for them!
+
+    for (var i = this.enemies.children.length; i < enemies.length; i++) {
+      var temp = this.enemies.create(
+        enemies[i].x,
+        enemies[i].y,
+        'enemy_00',
+        'Enemy0000'
+      );
+
+      temp.anchor.set(0.5);
+      this.game.physics.ninja.enableBody(temp);
+      temp.body.moves = false;
+      SimpleRPG.Enemy.loadAnimationStates(temp, this.game);
+    }   
+  }
+
+  for (var i = 0; i < this.enemies.children.length; i++) {
+    this.game.add.tween(this.enemies.children[i].body).to({
+          x : enemies[i].x,
+          y : enemies[i].y
+        },
+        500,
+        Phaser.Easing.Linear.None,
+        true);
+    
+    this.enemies.children[i].play(SimpleRPG.Enemy.getNameOfStates(
+        enemies[i].animationState
       ));
   }
 };

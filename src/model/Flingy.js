@@ -11,9 +11,6 @@
   var load = function () {
     /**
      * Flingy Constructor
-     *
-     * @constructor
-     * @param Object rawData
      */
     SimpleRPG.Flingy = function (rawData) {
       this.animationState;
@@ -32,9 +29,6 @@
       "ARROW"     : 0x0
     };
 
-    /**
-     * Static Enum
-     */
     SimpleRPG.Flingy.BEHAVIOURS = {
       "ARROW"     : (function () { /* TODO */})
     };

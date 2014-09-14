@@ -11,9 +11,6 @@
   var load = function () {
     /**
      * Enemy Constructor
-     * 
-     * @constructor
-     * @param Object rawData
      */
     SimpleRPG.Enemy = function (rawData) {
       this.animationState;
@@ -38,26 +35,13 @@
       'ATTACKING' : 0x2
     };
 
-    /**
-     * Get the slug version name of the given states.
-     * 
-     * @param String directionState
-     * @param String animationState
-     *
-     * @return String
-     */
     SimpleRPG.Enemy.getNameOfStates = function (direcitonState, animationState) {
       var nameArray = [];
-      nameArray.push(SimpleRPG.GameObject.getDirectionName(directionState));
+      //nameArray.push(SimpleRPG.GameObject.getDirectionName(directionState));
       nameArray.push(SimpleRPG.Enemy.getAnimationName(animationState));
-      return namArray.join('-').toLowerCase();
+      return nameArray.join('-').toLowerCase();
     };
 
-    /**
-     * Get the slug version name of the states of this object.
-     *
-     * @return String
-     */
     SimpleRPG.Enemy.prototype.getNameOfStates = function () {
       return SimpleRPG.Enemy.getNameOfStates(
         this.direction,
@@ -65,14 +49,6 @@
         );
     }
 
-    /**
-     * Get the name of the animation
-     *
-     * @throws Exception
-     * @param String animationState
-     *
-     * @return String
-     */
     SimpleRPG.Enemy.getAnimationName = function (animationState) {
       for (var prop in SimpleRPG.Player.ANIMATION) {
         if (SimpleRPG.Enemy.ANIMATION[prop] === animationState) {
@@ -84,11 +60,6 @@
       throw 'Not a valid animation!';
     };
 
-    /**
-     * Set the default variables for this object
-     *
-     * @param Object rawData
-     */
     SimpleRPG.Enemy.prototype.setDefaults = function (rawData) {
       rawData = (typeof rawData === "undefined" ? {} : rawData);
       rawData.x = (typeof rawData.x === "undefined" ? 0 : rawData.x);
@@ -105,6 +76,22 @@
       this.animationState = SimpleRPG.Enemy.ANIMATION.IDLE;
       this.type = rawData.type;
       this.health = 1000;
+    };
+
+    SimpleRPG.Enemy.loadAnimationStates = function (phaserEnemy, game) {
+      var a = phaserEnemy.animations;
+
+      // slug => array
+      var animations = [
+        // IDLE
+        [SimpleRPG.Enemy.getNameOfStates(
+          SimpleRPG.Enemy.ANIMATION.MOVING
+          ), game.math.numberArray(0, 3), 4, true]
+      ];
+
+      for (var i = 0; i < animations.length; i++) {
+        a.add(animations[i][0], animations[i][1], animations[i][2], animations[i][3]);
+      }
     };
   };
 

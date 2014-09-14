@@ -13,8 +13,8 @@ new_world = function () {
     players :[],
     flingys : [],
     enemies : [],
-    width : 0,  // TODO
-    height : 0  // TODO
+    width : 200,  // TODO
+    height : 200  // TODO
   };
 
   return world;
