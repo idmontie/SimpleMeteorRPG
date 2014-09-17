@@ -13,6 +13,7 @@
 SimpleRPG.Game = function (game) {
   this.player;
   this.playerModel;
+  this.oldPlayerModel = null;
   this.otherPlayers;
   this.enemies;
   this.cursors;
@@ -44,14 +45,6 @@ SimpleRPG.Game.prototype.create = function () {
   this.keys.d = this.game.input.keyboard.addKey(Phaser.Keyboard.D);
   this.keys.space = this.game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
   this.keys.shift = this.game.input.keyboard.addKey(Phaser.Keyboard.ENTER);
-  
-  var self = this;
-  setInterval(function () {
-    Meteor.call('get_world', function (e, r) {
-      self.askingForUpdate = false;
-      Session.set('world', r);
-    });
-  }, 500);
 };
 
 /**ene
@@ -126,6 +119,8 @@ SimpleRPG.Game.prototype.buildPlayers = function () {
  * Called by Phaser
  */
 SimpleRPG.Game.prototype.update = function () {
+  var r = Worlds.findOne();
+  Session.set('world', r);
   // set player to collide with layer collision tiles
   var self = this;
   var reset = true;
@@ -196,7 +191,6 @@ SimpleRPG.Game.prototype.update = function () {
   this.player.play(this.playerModel.getNameOfStates());
 
   // Update Meteor with our data!
-  // TODO player_data should really be this.playerModel
   this.playerModel.x = this.player.body.x;
   this.playerModel.y = this.player.body.y;
   this.playerModel.velocity = [
@@ -205,16 +199,15 @@ SimpleRPG.Game.prototype.update = function () {
   ];
   this.playerModel.state = 'INGAME';
 
-  // TODO ONLY UPDATE CHANGES
-  Meteor.call('update_player', Session.get('session_id'), this.playerModel);
-  if (!this.askingForUpdate) {
-    // TODO we only run this if we get an update!
-    world = Session.get('world');
-    var otherPlayers = this.getOtherPlayers(world);
-    this.updateOtherPlayers(otherPlayers);
-    this.updateEnemies(world);
-    this.askingForUpdate = true;
+  if (!_.isEqual(this.oldPlayerModel, _.clone(this.playerModel))) {
+    Meteor.call('update_player', Session.get('session_id'), this.playerModel);
   }
+  this.oldPlayerModel = _.clone(this.playerModel);
+  // TODO we only run this if we get an change in updates!
+  world = Session.get('world');
+  var otherPlayers = this.getOtherPlayers(world);
+  this.updateOtherPlayers(otherPlayers);
+  this.updateEnemies(world);
 };
 
 /**

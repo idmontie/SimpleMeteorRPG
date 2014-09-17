@@ -158,6 +158,9 @@ Meteor.startup(function () {
     }
 
     Session.set('session_id', session_id);
+    Deps.autorun(function(){
+      Meteor.subscribe("worlds");
+    });
   }
   if (Meteor.isServer) {
     // Make sure the server has a new world when we resart.
