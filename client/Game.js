@@ -119,13 +119,11 @@ SimpleRPG.Game.prototype.buildPlayers = function () {
  * Called by Phaser
  */
 SimpleRPG.Game.prototype.update = function () {
-  var r = Worlds.findOne();
-  Session.set('world', r);
   // set player to collide with layer collision tiles
   var self = this;
   var reset = true;
   var shoot = false;
-  var world = Session.get('world');
+  var world = Worlds.findOne();
   var speed = this.playerVelocity;
 
   // Collide with layers
@@ -198,16 +196,16 @@ SimpleRPG.Game.prototype.update = function () {
     this.player.body.velocity.y
   ];
   this.playerModel.state = 'INGAME';
+  
+  // TODO we only run this if we get an change in updates!
+  var otherPlayers = this.getOtherPlayers(world);
+  this.updateOtherPlayers(otherPlayers);
+  this.updateEnemies(world);
 
   if (!_.isEqual(this.oldPlayerModel, _.clone(this.playerModel))) {
     Meteor.call('update_player', Session.get('session_id'), this.playerModel);
   }
   this.oldPlayerModel = _.clone(this.playerModel);
-  // TODO we only run this if we get an change in updates!
-  world = Session.get('world');
-  var otherPlayers = this.getOtherPlayers(world);
-  this.updateOtherPlayers(otherPlayers);
-  this.updateEnemies(world);
 };
 
 /**
